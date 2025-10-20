@@ -22,7 +22,7 @@ export default function AdminAddProducts() {
     <AdminMain>
       <div className="min-h-screen bg-gray-50 p-4 md:p-6">
         <div className="max-w-5xl mx-auto">
-          {/* Header */}
+
           <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Add Product</h1>
             <div className="flex items-center gap-2 text-sm text-gray-600">

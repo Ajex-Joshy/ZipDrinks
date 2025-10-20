@@ -188,12 +188,12 @@ const ProductForm = ({productEditSubmit , product})=>{
     return (
 
         <form onSubmit={handleSubmit(productAdd)} className="space-y-6" noValidate>
-            {/* Product Details Card */}
+
             <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Product Details</h2>
 
                 <div className="space-y-4">
-                    {/* Product Name */}
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Product Name *
@@ -207,7 +207,6 @@ const ProductForm = ({productEditSubmit , product})=>{
                         {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
                     </div>
 
-                    {/* Category and Stock */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -228,7 +227,6 @@ const ProductForm = ({productEditSubmit , product})=>{
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        {/* Category Offer */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Product Offer:
@@ -242,7 +240,6 @@ const ProductForm = ({productEditSubmit , product})=>{
                             {errors.offer && <p className="text-red-500 text-sm mt-1">{errors.offer.message}</p>}
                         </div>
 
-                        {/* Max Redeemable */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Max Redeemable:
@@ -256,7 +253,6 @@ const ProductForm = ({productEditSubmit , product})=>{
                         </div>
                     </div>
 
-                    {/* Description */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Description
@@ -316,7 +312,6 @@ const ProductForm = ({productEditSubmit , product})=>{
                 )}
             </div>
 
-            {/* Bottom 3 Small Images */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[1, 2, 3].map((index) => (
                     <div
@@ -364,7 +359,6 @@ const ProductForm = ({productEditSubmit , product})=>{
                 ))}
             </div>
 
-            {/* Size Variants */}
             <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
 
                 <div className="flex justify-between items-center mb-4">
@@ -452,7 +446,6 @@ const ProductForm = ({productEditSubmit , product})=>{
             </div>
 
 
-            {/* Product Description */}
             <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">Product Description</h2>
 
@@ -525,7 +518,6 @@ const ProductForm = ({productEditSubmit , product})=>{
                 </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-end">
                 <button
                     type="submit"

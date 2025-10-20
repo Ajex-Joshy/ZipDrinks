@@ -103,14 +103,8 @@ const AdminMain = ({ children }) => {
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
-              <Link
-                key={item.label}
-                to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive(item.path)
-                  ? 'bg-blue-50 text-blue-600 font-medium'
-                  : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-              >
+              <Link key={item.label} to={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive(item.path)
+                  ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }`}>
                 <Icon size={20} />
                 <span>{item.label}</span>
               </Link>
@@ -120,27 +114,15 @@ const AdminMain = ({ children }) => {
       </aside>
 
       {sidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-transperant bg-opacity-50 z-40 top-16"
-          onClick={() => setSidebarOpen(false)}
-        >
-          <aside
-            className="fixed left-0 top-16 bottom-0 w-64 bg-white shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="lg:hidden fixed inset-0 bg-transperant bg-opacity-50 z-40 top-16" onClick={() => setSidebarOpen(false)} >
+          <aside className="fixed left-0 top-16 bottom-0 w-64 bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
             <nav className="p-4 space-y-2">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Link
-                    key={item.label}
-                    to={item.path}
-                    onClick={() => setSidebarOpen(false)}
+                  <Link key={item.label} to={item.path} onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive(item.path)
-                      ? 'bg-blue-50 text-blue-600 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                  >
+                      ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700 hover:bg-gray-50' }`}>
                     <Icon size={20} />
                     <span>{item.label}</span>
                   </Link>

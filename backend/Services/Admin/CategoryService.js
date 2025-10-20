@@ -1,5 +1,5 @@
 import categoryModel from "../../models/categoryModel.js"
-
+import productModel from "../../models/productModel.js"
 
 export const categoryAddService = async (req, res) => {
     const { name, description, offer, maxRedeem, image } = req.body
@@ -58,7 +58,7 @@ export const getCategoriesService = async (req, res) => {
         }
 
         res.json({ success: true, message: "Categories fetched Successfully", 
-            categories , total , totalPages : Math.ceil(total / limitValue) , currentPage : Number(page) })
+            categories , total , totalPages : Math.ceil(total / limitValue) , currentPage : Number(page)})
 
     } catch (error) {
         return res.json({ success: false, message: error.message })
@@ -79,9 +79,11 @@ export const categoryListUnlistService = async (req , res)=>{
 
         if(category.isListed){
             category.isListed = false;
+            await productModel.updateMany({category : category.name} , {$set : {isListed : false}})
         }
         else{
             category.isListed = true
+            await productModel.updateMany({category : category.name} , {$set : {isListed : true}})
         }
 
         await category.save()
@@ -96,8 +98,6 @@ export const categoryListUnlistService = async (req , res)=>{
 
 export const singleCategoryService = async (req , res)=>{
     const { categoryId } = req.params;
-
-    console.log(categoryId)
 
     try {
 
@@ -125,19 +125,11 @@ export const updateCategoryService = async(req , res)=>{
 
     try {
 
-        let category = await categoryModel.findByIdAndUpdate(categoryId , {$set : {name , description , offer , maxRedeem , image}});
+        let category = await categoryModel.findByIdAndUpdate(categoryId , {$set : {name , description , offer , maxRedeem , image}} , {new : true});
 
         if(!category){
             return res.json({success : false , message : "Something went wrong !"})
         }
-
-        category.name = name;
-        category.description = description;
-        category.offer = offer;
-        category.maxRedeem = maxRedeem
-        category.image = image;
-
-        await category.save()
 
         return res.json({success : true , message : "Updated Successfully" , category})
         

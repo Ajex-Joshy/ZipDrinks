@@ -9,7 +9,7 @@ const Card = ({ id, image, name, category, price, }) => {
     return (
         <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 hover:shadow-xl duration-300 w-full max-w-xs"
             onClick={()=> navigate(`/products/${id}`)}>
-            {/* Image Container */}
+
             <div className="relative bg-gray-50 h-56 flex items-center justify-center p-4">
                 <img
                     src={image}
@@ -18,9 +18,8 @@ const Card = ({ id, image, name, category, price, }) => {
                 />
             </div>
 
-            {/* Card Content */}
             <div className="p-4">
-                {/* Product Name */}
+
                 <h3 className="text-gray-800 font-semibold text-lg mb-2 truncate">
                     {name}
                 </h3>
@@ -29,8 +28,6 @@ const Card = ({ id, image, name, category, price, }) => {
                     {category}
                 </h5>
 
-
-                {/* Price and Cart Button */}
                 <div className="flex items-center justify-between">
                     <span className="text-xl font-bold text-gray-900">
                         ₹{price.toFixed(2)}

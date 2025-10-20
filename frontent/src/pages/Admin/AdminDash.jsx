@@ -4,7 +4,6 @@ import AdminMain from "../../Components/Admin/AdminMain"
 const AdminDash = () => {
 
   const name = useSelector(state => state.admin.adminData);
-  // {console.log(name)}
 
   return (
     <>

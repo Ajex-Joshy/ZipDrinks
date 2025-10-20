@@ -21,7 +21,7 @@ export const getCustomersService = async (req, res) => {
         }
 
         const skip = (parseInt(page) - 1) * parseInt(limit);
-        const total = await userModel.countDocuments();
+        const total = await userModel.countDocuments(query);
 
         let customers = await userModel.find(query).skip(skip).limit(limit).sort({createdAt : -1})
 

@@ -7,7 +7,7 @@ const Images = ({ images, productName }) => {
 
   return (
     <div className="flex gap-4">
-      {/* Thumbnail List */}
+
       <div className="flex flex-col gap-3">
         {images.map((img, index) => (
           <button
@@ -26,7 +26,6 @@ const Images = ({ images, productName }) => {
         ))}
       </div>
 
-      {/* Main Image with zoom on click */}
       <div className="flex-1 bg-white rounded border border-gray-200 p-8 flex items-center justify-center">
         <Zoom>
           <img

@@ -19,23 +19,6 @@ const AdminLogin = () => {
 
   const { register, formState: { errors }, handleSubmit, reset } = useForm()
 
-  // useEffect(() => {
-  //   // async function checkAdmin() {
-  //   //   try {
-  //   //     let { data } = await axiosInstance.get(backendurl + '/api/admin/data');
-
-  //   //     if (data.success) {
-  //   //       dispatch(adminSuccess(data.userData))
-  //   //       navigate("/admin/dashboard")
-  //   //     }
-  //   //   } catch (error) {
-  //   //     toast.error(error.message)
-  //   //   }
-  //   // }
-  //   // checkAdmin()
-  //   dispatch(fetchAdminData())
-  // }, [dispatch])
-
   async function adminLoginSubmit(data) {
     dispatch(loadStart())
     try {
@@ -127,12 +110,9 @@ const AdminLogin = () => {
                 type="submit"
                 disabled={loading}
                 className={`relative w-full flex items-center justify-center gap-2 
-                                        py-2.5 rounded-lg font-medium text-white transition-all duration-300
-                                        ${loading
-                    ? "bg-green-600 cursor-not-allowed opacity-90"
-                    : "bg-green-600 hover:bg-green-700 active:scale-95"
-                  }`}
-              >
+                          py-2.5 rounded-lg font-medium text-white transition-all duration-300
+                          ${loading ? "bg-green-600 cursor-not-allowed opacity-90"
+                        : "bg-green-600 hover:bg-green-700 active:scale-95" }`} >
                 {loading ? (
                   <>
                     <Loader className="animate-spin text-white" size={18} />

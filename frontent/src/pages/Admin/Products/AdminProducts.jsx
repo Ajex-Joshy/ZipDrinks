@@ -106,7 +106,7 @@ export default function AdminProducts() {
     <AdminMain>
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">Products</h1>
@@ -119,10 +119,9 @@ export default function AdminProducts() {
             </Link>
           </div>
 
-          {/* Filters */}
           <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
             <div className="flex flex-wrap gap-4 items-center">
-              {/* Search */}
+
               <div className="relative flex-1 min-w-[250px]">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -142,7 +141,6 @@ export default function AdminProducts() {
                 )}
               </div>
 
-              {/* Sort By */}
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium text-gray-700">Sort:</label>
                 <select
@@ -155,7 +153,6 @@ export default function AdminProducts() {
                 </select>
               </div>
 
-              {/* Filter */}
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium text-gray-700">Filter:</label>
                 <select
@@ -176,7 +173,6 @@ export default function AdminProducts() {
             </div>
           </div>
 
-          {/* Products Table */}
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <Loader className="animate-spin text-gray-600" size={30} />
@@ -232,7 +228,6 @@ export default function AdminProducts() {
                 </table>
               </div>
 
-              {/* Pagination */}
               <div className="px-6 py-4 border-t flex justify-between items-center text-sm text-gray-600">
                 <span>
                   Showing page {currentPage} of {totalPages} — Total {totalProducts} products
@@ -276,7 +271,6 @@ export default function AdminProducts() {
         </div>
       </div>
 
-      {/* Variant Modal */}
       {showVariantModal && selectedProduct && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">

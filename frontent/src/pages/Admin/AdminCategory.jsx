@@ -40,12 +40,10 @@ export default function AdminCategory() {
     }
   };
 
-  // ✅ Clear search field
   const handleClearSearch = () => {
     setSearchTerm('');
   };
 
-  // ✅ Update query params when search/sort changes
   useEffect(() => {
     setQuery({
       search: searchTerm,
@@ -55,7 +53,6 @@ export default function AdminCategory() {
   }, [searchTerm, sortBy, currentPage]);
 
 
-  // ✅ Fetch categories
   useEffect(() => {
     async function getCategories() {
       try {
@@ -108,7 +105,7 @@ export default function AdminCategory() {
     <AdminMain>
       <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+
           <div className="mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">CATEGORY</h1>
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -116,10 +113,9 @@ export default function AdminCategory() {
             </div>
           </div>
 
-          {/* Controls Bar */}
           <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
             <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
-              {/* Search */}
+
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
@@ -139,7 +135,6 @@ export default function AdminCategory() {
                 )}
               </div>
 
-              {/* Sort Dropdown */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -151,7 +146,6 @@ export default function AdminCategory() {
                 <option value="lastAdded">Last Added First</option>
               </select>
 
-              {/* Add Category Button */}
               <Link
                 to="/admin/categories/add-category"
                 className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors whitespace-nowrap"
@@ -161,22 +155,18 @@ export default function AdminCategory() {
             </div>
           </div>
 
-          {/* Table / Loader / Empty State */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             {loading ? (
-              // ✅ Loader
               <div className="flex justify-center items-center py-20">
                 <Loader className="animate-spin text-gray-600" size={30} />
               </div>
             ) : categories.length === 0 ? (
-              // ✅ Empty State
               <div className="flex flex-col items-center justify-center h-64 text-gray-500">
                 <p className="text-lg font-medium">No categories found</p>
                 <p className="text-sm">Try adjusting your search or sorting options.</p>
               </div>
             ) : (
               <>
-                {/* ✅ Desktop Table */}
                 <div className="hidden md:block overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-green-700">
@@ -198,14 +188,10 @@ export default function AdminCategory() {
                             {new Date(category.createdAt).toLocaleDateString()}
                           </td>
 
-                          {/* ✅ List/Unlist Toggle */}
                           <td className="px-2 py-4 text-sm flex">
                             <span
                               className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${category.isListed
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                                }`}
-                            >
+                                ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                               {category.isListed ? 'Listed' : 'Unlisted'}
                             </span>
                             <button
@@ -220,7 +206,6 @@ export default function AdminCategory() {
                             </button>
                           </td>
 
-                          {/* ✅ Actions */}
                           <td className="px-4 py-4">
                             <div className="flex items-center gap-2">
                               <button className="p-1.5 hover:bg-gray-100 rounded">
@@ -267,10 +252,7 @@ export default function AdminCategory() {
                           key={page}
                           onClick={() => setCurrentPage(page)}
                           className={`px-3 py-2 rounded-lg transition-colors ${currentPage === page
-                            ? 'bg-gray-800 text-white'
-                            : 'border border-gray-300 hover:bg-gray-50'
-                            }`}
-                        >
+                            ? 'bg-gray-800 text-white' : 'border border-gray-300 hover:bg-gray-50'}`}>
                           {page}
                         </button>
                       )
@@ -285,7 +267,6 @@ export default function AdminCategory() {
                   </div>
                 </div>
 
-                {/* ✅ Mobile Cards */}
                 <div className="md:hidden divide-y divide-gray-200">
                   {categories.map((category, index) => (
                     <div key={category._id} className="p-4">

@@ -100,7 +100,7 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
 
     return (
         <form className="bg-white rounded-lg shadow-sm p-6 md:p-8" onSubmit={handleSubmit(categorySubmit)}>
-            {/* Upload Image Section */}
+
             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                     Upload Image
@@ -161,7 +161,7 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
 
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {/* Category Offer */}
+
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Category Offer:
@@ -175,7 +175,6 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
                     {errors.offer && <p className="text-red-500 text-sm mt-1">{errors.offer.message}</p>}
                 </div>
 
-                {/* Max Redeemable */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                         Max Redeemable:
@@ -189,7 +188,7 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
                 </div>
             </div>
 
-            {/* Category Name */}
+
             <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                     Category Name:
@@ -203,7 +202,7 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
                 {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
             </div>
 
-            {/* Description */}
+
             <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description:
@@ -217,7 +216,6 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
                 {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
             </div>
 
-            {/* Submit Button */}
             <div className="flex justify-center">
                 <button
                     type="submit"

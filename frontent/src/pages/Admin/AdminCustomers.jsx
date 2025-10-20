@@ -19,7 +19,6 @@ const AdminCustomers = () => {
 
   const itemsPerPage = 5;
 
-  // ✅ Update URL params when filters/search/page change
   useEffect(() => {
     setSearchParams({
       search: searchTerm,
@@ -28,7 +27,7 @@ const AdminCustomers = () => {
     });
   }, [searchTerm, statusFilter, currentPage, setSearchParams]);
 
-  // ✅ Fetch customers
+
   useEffect(() => {
     const getCustomers = async () => {
       setLoading(true);
@@ -59,7 +58,7 @@ const AdminCustomers = () => {
     getCustomers();
   }, [searchTerm, statusFilter, currentPage]);
 
-  // ✅ Toggle block/unblock status
+
   const handleToggleStatus = async (customerId) => {
     try {
       const { data } = await axiosInstance.patch(`/api/admin/customers/${customerId}/status`);
@@ -78,11 +77,14 @@ const AdminCustomers = () => {
     }
   };
 
-  // ✅ Generate pagination numbers
+
   const getPageNumbers = () => {
     const pages = [];
     if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
+      for (let i = 1; i <= totalPages; i++){
+        pages.push(i);
+      }
+
     } else {
       if (currentPage <= 3) {
         pages.push(1, 2, 3, '...', totalPages);
@@ -98,7 +100,7 @@ const AdminCustomers = () => {
   return (
     <AdminMain>
       <div className="p-4 md:p-6 lg:p-8">
-        {/* Header */}
+
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">CUSTOMER LIST</h1>
           <p className="text-sm text-gray-500">
@@ -107,9 +109,8 @@ const AdminCustomers = () => {
           </p>
         </div>
 
-        {/* Search & Filter */}
         <div className="mb-6 flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-          {/* Search box */}
+
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
             <div className="relative w-full sm:w-64 lg:w-80">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -124,8 +125,7 @@ const AdminCustomers = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <button
-              onClick={() => {
+            <button onClick={() => {
                 setSearchTerm('');
                 setCurrentPage(1);
               }}
@@ -135,7 +135,6 @@ const AdminCustomers = () => {
             </button>
           </div>
 
-          {/* Filter */}
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
             <div className="relative w-full sm:w-48">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -155,14 +154,12 @@ const AdminCustomers = () => {
           </div>
         </div>
 
-        {/* Table or Loader */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <Loader className="animate-spin text-gray-600" size={30} />
           </div>
         ) : (
           <>
-            {/* Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -228,7 +225,6 @@ const AdminCustomers = () => {
               </div>
             </div>
 
-            {/* Pagination */}
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
               <p className="text-sm text-gray-600">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}

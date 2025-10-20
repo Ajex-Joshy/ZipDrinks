@@ -128,7 +128,6 @@ const ProductDetail = () => {
                     </div>
                 </div>
 
-                {/* Reviews + Description Tabs */}
                 <div className="bg-white rounded-lg border border-gray-200 my-6">
                     <div className="border-b border-gray-200">
                         <div className="flex">

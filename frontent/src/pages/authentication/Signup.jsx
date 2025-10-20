@@ -141,12 +141,9 @@ const Signup = () => {
                                 type="submit"
                                 disabled={loading}
                                 className={`relative w-full flex items-center justify-center gap-2 mt-4 
-                                                                    py-2.5 rounded-lg font-medium text-white transition-all duration-300
-                                                                    ${loading
-                                        ? "bg-teal-600 cursor-not-allowed opacity-90"
-                                        : "bg-teal-700 hover:bg-teal-800 active:scale-95"
-                                    }`}
-                            >
+                                            py-2.5 rounded-lg font-medium text-white transition-all duration-300
+                                            ${loading ? "bg-teal-600 cursor-not-allowed opacity-90"
+                                            : "bg-teal-700 hover:bg-teal-800 active:scale-95" }`}>
                                 {loading ? (
                                     <>
                                         <Loader className="animate-spin text-white" size={18} />

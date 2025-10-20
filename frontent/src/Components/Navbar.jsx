@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux"
 import { logout } from '../Store/user/UserSlice';
 import axiosInstance from '../Helper/AxiosInstance';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const Navbar = () => {
 
@@ -24,15 +26,31 @@ const Navbar = () => {
     }
 
     async function handleLogout() {
-        try {
-            let res = await axiosInstance.post(backendurl + '/api/auth/logout');
-            if (res.data.success) {
-                dispatch(logout())
-            }
 
-        } catch (error) {
-            console.log(error.message)
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won’t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout!',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await axiosInstance.post(backendurl + '/api/auth/logout');
+                    if (res.data.success) {
+                        dispatch(logout());
+                        toast.success("logout Successfully")
+                        navigate('/');
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                    toast.error('Error!', 'Something went wrong during logout.', error.message);
+                }
+            }
+        });
+
     }
 
     return (

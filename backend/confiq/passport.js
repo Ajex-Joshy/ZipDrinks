@@ -30,17 +30,4 @@ async (accessToken , refreshToken , profile , done)=>{
 }
 ));
 
-// passport.serializeUser((user , done)=>{
-//     done(null, user.id)
-// })
-
-// passport.deserializeUser((id , done)=>{
-//     userModel.findById(id).then((user)=>{
-//         done(null, user)
-//     })
-//     .catch((err)=>{
-//         done(err , null)
-//     })
-// })
-
 export default passport;
