@@ -48,6 +48,9 @@ const Navbar = () => {
                     console.log(error.message);
                     toast.error('Error!', 'Something went wrong during logout.', error.message);
                 }
+                finally{
+                    setDropDown(false)
+                }
             }
         });
 
@@ -84,9 +87,15 @@ const Navbar = () => {
                                     0
                                 </span>
                             </button>
-                            <button className="hidden sm:block text-neutral-400 hover:text-white transition"
-                                onClick={handleAccountClick}>
-                                <User size={20} />
+                            <button
+                                onClick={handleAccountClick}
+                                className={`hidden sm:flex items-center justify-center gap-1 px-3 py-1 border border-white rounded-md text-sm transition 
+                                ${isLoggedIn
+                                        ? 'text-white hover:text-blue-400 hover:border-blue-400'
+                                        : 'text-white hover:text-blue-400 hover:border-blue-400'
+                                    }`}
+                            >
+                                {isLoggedIn ? <User size={18} /> : "Login"}
                             </button>
 
                             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="lg:hidden text-neutral-400 hover:text-white transition">

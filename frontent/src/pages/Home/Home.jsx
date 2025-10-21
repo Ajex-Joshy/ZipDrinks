@@ -36,7 +36,7 @@ const Home = () => {
                         {products?.slice(0, 4)?.map((product) => (
                             <Card key={product._id}
                                 id={product._id}
-                                image={product.images[0]}
+                                image={product.coverImage || product.images[0]}
                                 name={product.name}
                                 category={product.category}
                                 price={product.variants[0].salePrice}
@@ -58,7 +58,7 @@ const Home = () => {
                         {products?.slice(products.length - 4, products.length)?.map((product) => (
                             <Card key={product._id}
                                 id={product._id}
-                                image={product.images[0]}
+                                image={product.coverImage || product.images[0]}
                                 name={product.name}
                                 category={product.category}
                                 price={product.variants[0].salePrice}

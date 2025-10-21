@@ -34,6 +34,7 @@ const Signup = () => {
                 navigate("/email-verify")
             } else {
                 toast.error(res.data.message || "Something went wrong !")
+                console.log(res.data)
                 dispatch(loginFail())
             }
 
@@ -104,7 +105,7 @@ const Signup = () => {
                                     </label>
                                     <div className="relative">
                                         <input className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent"
-                                            placeholder="••••••••" {...register("password", {
+                                            placeholder="••••••••" type="password" {...register("password", {
                                                 required: { value: true, message: "password is required !" },
                                                 pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, message: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character' }
                                             })} />
@@ -118,7 +119,7 @@ const Signup = () => {
                                     </label>
                                     <div className="relative">
                                         <input className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent"
-                                            placeholder="•••••••" {...register("confirmPassword", {
+                                            placeholder="•••••••" type="password" {...register("confirmPassword", {
                                                 required: { value: true, message: "password is required !" },
                                                 pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, message: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character' },
                                                 validate: (value) => value === watch('password') || "Password must be match !"

@@ -22,7 +22,7 @@ import ImageCropperModal from './ImageCropperModal';
 import { useNavigate } from 'react-router-dom';
 import { Loader } from 'react-feather';
 
-const ProductForm = ({productEditSubmit , product})=>{
+const ProductForm = ({ productEditSubmit, product }) => {
 
     console.log(product)
 
@@ -60,44 +60,47 @@ const ProductForm = ({productEditSubmit , product})=>{
 
     const { register, control, handleSubmit, formState: { errors }, reset } = useForm({
         defaultValues: {
-            name : product?.name || "",
-            category : product?.category || "",
-            offer : product?.offer || "",
-            maxRedeem : product?.maxRedeem || "",
-            description : product?.description || "",
-            variants : product?.variants?.map((val)=>{
-                return {size : val.size , quantity : val.quantity , price : val.price , salePrice : val.salePrice }
-            }) || [{size : "" , quantity : "" , price : "" , salePrice : ""}],
-            brand : product?.brand || "",
-            ingredients : product?.ingredients || "",
-            store : product?.store || "",
-            serve : product?.serve || "",
-            life : product?.life || ""
+            name: product?.name || "",
+            category: product?.category || "",
+            offer: product?.offer || "",
+            maxRedeem: product?.maxRedeem || "",
+            description: product?.description || "",
+            variants: product?.variants?.map((val) => {
+                return { size: val.size, quantity: val.quantity, price: val.price, salePrice: val.salePrice }
+            }) || [{ size: "", quantity: "", price: "", salePrice: "" }],
+            brand: product?.brand || "",
+            ingredients: product?.ingredients || "",
+            store: product?.store || "",
+            serve: product?.serve || "",
+            life: product?.life || ""
         },
     });
 
-    useEffect(()=>{
-        if(product && Object.keys(product).length > 0){
+    useEffect(() => {
+        if (product && Object.keys(product).length > 0) {
             reset({
-            name : product?.name || "",
-            category : product?.category || "",
-            offer : product?.offer || "",
-            maxRedeem : product?.maxRedeem || "",
-            description : product?.description || "",
-            variants : product?.variants?.map((val)=>{
-                return {size : val.size , quantity : val.quantity , price : val.price , salePrice : val.salePrice }
-            }) || [{size : "" , quantity : "" , price : "" , salePrice : ""}],
-            brand : product?.brand || "",
-            ingredients : product?.ingredients || "",
-            store : product?.store || "",
-            serve : product?.serve || "",
-            life : product?.life || ""
+                name: product?.name || "",
+                category: product?.category || "",
+                offer: product?.offer || "",
+                maxRedeem: product?.maxRedeem || "",
+                description: product?.description || "",
+                variants: product?.variants?.map((val) => {
+                    return { size: val.size, quantity: val.quantity, price: val.price, salePrice: val.salePrice }
+                }) || [{ size: "", quantity: "", price: "", salePrice: "" }],
+                brand: product?.brand || "",
+                ingredients: product?.ingredients || "",
+                store: product?.store || "",
+                serve: product?.serve || "",
+                life: product?.life || ""
             })
         }
-        if(product?.images?.length > 0){
+        if(product?.coverImage){
+            setMainImageIndex(product.images.indexOf(product.coverImage))
+        }
+        if (product?.images?.length > 0) {
             setImages([...product.images])
         }
-    },[reset , product , categories])
+    }, [reset, product, categories])
 
     const { fields, append, remove } = useFieldArray({
         control,
@@ -157,13 +160,14 @@ const ProductForm = ({productEditSubmit , product})=>{
     };
 
     const productAdd = async (data) => {
-        if (images.length !== 4) {
+        if (images.length < 4) {
             return toast.error("4 images is required !")
         }
         data.images = images
+        data.coverImage = images[mainImageIndex]
         setLoading(true)
 
-        if(productEditSubmit){
+        if (productEditSubmit) {
             await productEditSubmit(data)
             return setLoading(false)
         }
@@ -273,59 +277,21 @@ const ProductForm = ({productEditSubmit , product})=>{
             </div>
 
 
-            <div className="w-full border-2 border-dashed border-gray-300 rounded-lg p-10 text-center hover:border-gray-400 transition-colors mb-6 relative">
-                {imgLoad[0] ? (
-                    <div className="flex justify-center items-center h-[100px] text-gray-500">
-                        Uploading...
-                    </div>
-                ) : images[0] ? (
-                    <>
-                        <img
-                            src={images[0]}
-                            alt="Main Product"
-                            className="w-full h-full p-2 object-cover rounded-lg"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => removeImage(0)}
-                            className="absolute top-2  right-2 bg-red-600 text-white p-1 rounded"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-
-                    </>
-                ) : (
-                    <>
-                        <p className="text-sm text-gray-600 mb-3">Drop main image here or click below</p>
-                        <label className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 cursor-pointer text-sm flex items-center gap-2 justify-center">
-                            <Upload className="w-5 h-5 text-blue-600" />
-                            Upload Image
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => handleImageUpload(e, 0)}
-                                key={inputKey}
-                                className="hidden"
-                            />
-                        </label>
-                    </>
-                )}
-            </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[1, 2, 3].map((index) => (
+                {images.map((img, index) => (
                     <div
                         key={index}
-                        className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors relative"
+                        className={`relative border-2 rounded-lg p-8 transition-colors ${mainImageIndex === index ? "border-green-500" : "border-dashed border-gray-300"
+                            }`}
                     >
                         {imgLoad[index] ? (
                             <div className="flex justify-center items-center h-[100px] text-gray-500">
                                 Uploading...
                             </div>
-                        ) : images[index] ? (
+                        ) : img ? (
                             <>
                                 <img
-                                    src={images[index]}
+                                    src={img}
                                     alt={`Image ${index + 1}`}
                                     className="w-full h-full object-cover rounded-lg"
                                 />
@@ -336,11 +302,19 @@ const ProductForm = ({productEditSubmit , product})=>{
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setMainImageIndex(index)}
+                                    className={`absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 text-xs rounded ${mainImageIndex === index ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700"
+                                        }`}
+                                >
+                                    {mainImageIndex === index ? "Cover" : "Set Cover"}
+                                </button>
                             </>
                         ) : (
                             <>
                                 <p className="text-sm text-gray-600 mb-3">
-                                    Drop image here or click below
+                                    Upload an image for this product
                                 </p>
                                 <label className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 cursor-pointer text-sm flex items-center gap-2 justify-center">
                                     <Upload className="w-5 h-5 text-blue-600" />
@@ -349,7 +323,7 @@ const ProductForm = ({productEditSubmit , product})=>{
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => handleImageUpload(e, index)}
-                                        key={inputKey}
+                                        key={inputKey + index}
                                         className="hidden"
                                     />
                                 </label>
@@ -357,7 +331,16 @@ const ProductForm = ({productEditSubmit , product})=>{
                         )}
                     </div>
                 ))}
+
+                <button
+                    type="button"
+                    onClick={() => setImages((prev) => [...prev, null])}
+                    className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-8 text-gray-500 hover:text-gray-700 hover:border-gray-400 transition"
+                >
+                    <Plus className="w-5 h-5" /> Add Image
+                </button>
             </div>
+
 
             <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
 

@@ -27,34 +27,39 @@ const Shop = () => {
 
     useEffect(() => {
         const params = {};
-        if (searchTerm){
+        if (searchTerm) {
             params.search = searchTerm;
         }
-        if (categoryFilter.length){
+        if (categoryFilter.length) {
             params.category = categoryFilter.join(',');
         }
-        if (sizeFilter.length){
+        if (sizeFilter.length) {
             params.size = sizeFilter.join(',');
         }
-        if (sortBy){
+        if (sortBy) {
             params.sort = sortBy;
         }
-        if (currPage){
+        if (currPage) {
             params.page = currPage;
         }
         setSearchQuery(params);
     }, [searchTerm, categoryFilter, sizeFilter, sortBy, currPage, setSearchQuery]);
 
     useEffect(() => {
-        const params = {
-            search: searchTerm,
-            category: categoryFilter.join(','),
-            size: sizeFilter.join(','),
-            sort: sortBy,
-            page: currPage,
-            limit: itemsPerPage,
-        };
-        dispatch(productFetch(params));
+        const timer = setTimeout(() => {
+            const params = {
+                search: searchTerm,
+                category: categoryFilter.join(','),
+                size: sizeFilter.join(','),
+                sort: sortBy,
+                page: currPage,
+                limit: itemsPerPage,
+            };
+            dispatch(productFetch(params));
+        }, 300);
+        return () => {
+            clearTimeout(timer)
+        }
     }, [searchTerm, categoryFilter, sizeFilter, sortBy, currPage, dispatch]);
 
 
@@ -63,10 +68,10 @@ const Shop = () => {
             try {
                 const { data } = await axiosInstance.get('/api/categories');
 
-                if (data.success){
+                if (data.success) {
                     setCategories(data.categories);
                 }
-                else{
+                else {
                     toast.error(data.message);
                 }
             } catch (error) {
@@ -96,9 +101,14 @@ const Shop = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <button onClick={() => setSearchTerm('')} className="p-2 text-gray-500 hover:text-red-500">
-                        <X className="w-5 h-5" />
-                    </button>
+                    {searchTerm ?
+                        (
+                            <button onClick={() => setSearchTerm('')} className="p-2 text-gray-500 hover:text-red-500">
+                                <X className="w-5 h-5" />
+                            </button>
+                        )
+                        : ""
+                    }
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-6">
@@ -133,7 +143,7 @@ const Shop = () => {
                                                         setCategoryFilter([...categoryFilter, category.name]);
                                                     }
                                                 }}
-                                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"/>
+                                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
                                             <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
                                                 {category.name}
                                             </span>
@@ -155,7 +165,7 @@ const Shop = () => {
                                                         setSizeFilter([...sizeFilter, size]);
                                                     }
                                                 }}
-                                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"/>
+                                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
                                             <span className="ml-2 text-sm text-gray-700 group-hover:text-gray-900">
                                                 {size}
                                             </span>
@@ -163,22 +173,36 @@ const Shop = () => {
                                     ))}
                                 </div>
                             </div>
+                            <button
+                                onClick={() => {
+                                    setCategoryFilter([]);
+                                    setSizeFilter([]);
+                                }}
+                                className="px-3 py-1 text-sm text-gray-800 hover:text-red-500 border m-4 border-gray-400 rounded-md transition"
+                            >
+                                Clear Filters
+                            </button>
                         </div>
                     </aside>
 
                     <div className="flex-1">
 
                         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
-                            {productData?.map((product) => (
-                                <Card
-                                    key={product._id}
-                                    id={product._id}
-                                    image={product.images[0]}
-                                    name={product.name}
-                                    category={product.category}
-                                    price={product.variants[0].salePrice}
-                                />
-                            ))}
+                            {productData?.length == 0 ? <p>No Products Found</p>
+                                :
+                                (
+                                    productData?.map((product) => (
+                                        <Card
+                                            key={product._id}
+                                            id={product._id}
+                                            image={product.coverImage || product.images[0]}
+                                            name={product.name}
+                                            category={product.category}
+                                            price={product.variants[0].salePrice}
+                                        />
+                                    ))
+                                )
+                            }
                         </div>
 
                         {totalPages > 1 && (

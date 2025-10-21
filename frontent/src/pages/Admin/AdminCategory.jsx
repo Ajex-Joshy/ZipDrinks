@@ -143,7 +143,7 @@ export default function AdminCategory() {
                 <option value="">Sort</option>
                 <option value="highSale">High Sale</option>
                 <option value="lowSale">Low Sale</option>
-                <option value="lastAdded">Last Added First</option>
+                <option value="firstAdded">First Added</option>
               </select>
 
               <Link

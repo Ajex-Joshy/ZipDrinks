@@ -46,11 +46,11 @@ export const getCategoriesService = async (req, res) => {
 
         let categories;
 
-        if (sort == "lastAdded") {
-            categories = await categoryModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitValue)
+        if (sort == "firstAdded") {
+            categories = await categoryModel.find(query).sort({ createdAt: 1 }).skip(skip).limit(limitValue)
         }
         else{
-            categories = await categoryModel.find(query).skip(skip).limit(limitValue)
+            categories = await categoryModel.find(query).sort({ createdAt : -1}).skip(skip).limit(limitValue)
         }
 
         if (!categories) {

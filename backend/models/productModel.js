@@ -53,6 +53,10 @@ const ProductSchema = new mongoose.Schema({
             required : true
         }
     ],
+    coverImage : {
+        type : String,
+        required : true
+    },
     variants : [varientSchema],
     brand : {
         type : String,

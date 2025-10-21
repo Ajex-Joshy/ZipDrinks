@@ -2,7 +2,7 @@ import productModel from "../../models/productModel.js";
 
 export const addProductsServic = async (req, res) => {
     const { name, category, offer, maxRedeem, description, images,
-        brand, ingredients, serve, store, life, variants } = req.body
+        brand, ingredients, serve, store, life, variants  , coverImage } = req.body
 
     let updatedVariants = variants.map((v) => {
         return { ...v, sku: `${name.replace(/\s+/g, "")}-${v.size.replace(/\s+/g, "")}`.toUpperCase() }
@@ -11,7 +11,7 @@ export const addProductsServic = async (req, res) => {
     try {
 
         if (!name.trim() || !category.trim() || !description.trim() || !brand.trim() || !ingredients.trim() ||
-            !serve.trim() || !store.trim() || !life.trim() || variants.length == 0 || images.length == 0) {
+            !serve.trim() || !store.trim() || !life.trim() ||  !coverImage.trim() || variants.length == 0 || images.length == 0) {
             return res.json({ success: false, message: "Invalid Entries !" });
         }
 
@@ -22,8 +22,8 @@ export const addProductsServic = async (req, res) => {
         }
 
         let product = await productModel({
-            name, description, category, offer, maxRedeem,
-            images, variants: updatedVariants, brand, ingredients, store, serve, life
+            name, description, category, offer, maxRedeem,images, variants: updatedVariants, 
+            brand, ingredients, store, serve, life , coverImage
         })
 
         await product.save()
@@ -60,7 +60,7 @@ export const getProductsService = async (req, res) => {
             query.category = filter
         }
 
-        let sortQuery = {};
+        let sortQuery = { createdAt : -1 };
 
         if (sort == "lastAdded") {
             sortQuery = { createdAt: -1 }
@@ -140,21 +140,21 @@ export const singleProductService = async (req, res) => {
 export const updateProductService = async (req, res) => {
     const { productId } = req.params;
     const { name, category, offer, maxRedeem, description, images,
-        brand, ingredients, serve, store, life, variants } = req.body
+        brand, ingredients, serve, store, life, variants , coverImage } = req.body
 
     let updatedVariants = variants.map((v) => {
         return { ...v, sku: `${name.replace(/\s+/g, "")}-${v.size.replace(/\s+/g, "")}`.toUpperCase() }
     })
 
     if (!name.trim() || !category.trim() || !description.trim() || !brand.trim() || !ingredients.trim() ||
-        !serve.trim() || !store.trim() || !life.trim() || variants.length == 0 || images.length == 0) {
+        !serve.trim() || !store.trim() || !life.trim() || !coverImage.trim() || variants.length == 0 || images.length == 0) {
         return res.json({ success: false, message: "Invalid Entries !" });
     }
 
     try {
 
         let updateProduct = await productModel.findByIdAndUpdate(productId, {$set: { name, category, description, offer, maxRedeem,
-                images, brand, ingredients, serve, store, life, variants : updatedVariants}})
+                images, brand, ingredients, serve, store, life, variants : updatedVariants , coverImage}})
 
         if (!updateProduct) {
             return res.json({ success: false, message: "Something went wrong !" })

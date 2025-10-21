@@ -122,7 +122,7 @@ export const resendVerifyOtpService = async (req, res) => {
     }
 
     if (user.isVerified){
-        return res.json({ success: false, message: "User already verified" });
+        return res.json({ success: false, message: "User already verified"});
     }
 
     const otp = String(Math.floor(100000 + Math.random() * 900000));
@@ -135,7 +135,7 @@ export const resendVerifyOtpService = async (req, res) => {
       text: `Your OTP is: ${otp}`,
     });
 
-    return res.json({ success: true, message: "Verification OTP resent to email" });
+    return res.json({ success: true, message: "Verification OTP resent to email"});
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
