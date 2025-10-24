@@ -29,6 +29,15 @@ import ProductDetail from "./pages/Home/ProductDetail.jsx"
 import Shop from "./pages/Home/Shop.jsx"
 import NotFound from "./pages/Home/NotFound.jsx"
 import ErrorBoundary from "./pages/Home/ErrorBoundary.jsx"
+import Profile from "./pages/UserProfile/Profile.jsx"
+import ProfileEdit from "./pages/UserProfile/ProfileEdit.jsx"
+import VerifyEditEmail from "./pages/UserProfile/VerifyEditEmail.jsx"
+import UserProtectedRoute from "./Components/UserProtectedRoute.jsx"
+import ChangePassword from "./pages/UserProfile/ChangePassword.jsx"
+import Address from "./pages/UserProfile/Address.jsx"
+import AddressForm from "./Components/AddressForm.jsx"
+import AddAddress from "./pages/UserProfile/AddAddress.jsx"
+import EditAddress from "./pages/UserProfile/EditAddress.jsx"
 
 function App() {
 
@@ -90,6 +99,43 @@ function App() {
         <Route path="/google-callback" element={!isVerified ? <GoogleCallback /> : <Navigate to={"/"} />} />
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/shop" element={<Shop />} />
+        <Route path="/profile" element={
+          <UserProtectedRoute>
+            <Profile />
+          </UserProtectedRoute>
+          }/>
+        <Route path="/profile/edit" element={
+          <UserProtectedRoute>
+            <ProfileEdit />
+          </UserProtectedRoute>
+          } />
+        <Route path="/profile/edit/verify" element={
+          <UserProtectedRoute>
+            <VerifyEditEmail /> 
+          </UserProtectedRoute>
+          }/>
+        <Route path="/profile/change-password" element={
+          <UserProtectedRoute>
+            <ChangePassword /> 
+          </UserProtectedRoute>
+        }/> 
+        <Route path="/profile/address" element={
+          <UserProtectedRoute>
+            <Address /> 
+          </UserProtectedRoute>
+        }/> 
+        <Route path="/profile/address/add-address" element={
+          <UserProtectedRoute>
+            <AddAddress />
+          </UserProtectedRoute>
+        } />
+        <Route path="/profile/address/:id/edit" element={
+          <UserProtectedRoute>
+            <EditAddress />
+          </UserProtectedRoute>
+        } />
+ 
+
 
         <Route path="/admin/login" element={admin ? <Navigate to="/admin/dashboard" replace /> : <AdminLogin />} />
         <Route path="/admin/dashboard" element={

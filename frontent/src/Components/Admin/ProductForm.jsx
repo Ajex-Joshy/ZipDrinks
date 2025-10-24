@@ -1,16 +1,3 @@
-// import React from 'react'
-// import AdminMain from '../../../Components/Admin/AdminMain'
-
-// const AdminAddProducts = () => {
-//   return (
-//     <AdminMain>
-//         <h1>Add Products</h1>
-//     </AdminMain>
-//   )
-// }
-
-// export default AdminAddProducts
-
 
 import React, { useEffect, useState } from 'react';
 import { Upload, X, Plus, Trash2 } from 'lucide-react';
@@ -533,6 +520,5 @@ const ProductForm = ({ productEditSubmit, product }) => {
         </form>
     );
 }
-
 
 export default ProductForm

@@ -22,6 +22,7 @@ export const registerUser = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
+    
     const otp = String(Math.floor(100000 + Math.random() * 900000));
 
     const user = new userModel({ fullname, email, phone, password: hashPassword });
