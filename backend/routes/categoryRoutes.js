@@ -1,6 +1,6 @@
 
 import express from "express";
-import { getUserCategories } from "../controllers/User/categoryService.js";
+import { getUserCategories } from "../controllers/User/categoryController.js";
 
 const categoryRouter = express.Router()
 

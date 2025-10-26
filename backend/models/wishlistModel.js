@@ -16,7 +16,8 @@ const wishlistSchema = mongoose.Schema({
             addedAt : {
                 type : Date,
                 default : Date.now
-            }
+            },
+            _id : false
         }
     ]
 },

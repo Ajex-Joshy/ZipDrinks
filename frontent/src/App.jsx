@@ -38,6 +38,9 @@ import Address from "./pages/UserProfile/Address.jsx"
 import AddressForm from "./Components/AddressForm.jsx"
 import AddAddress from "./pages/UserProfile/AddAddress.jsx"
 import EditAddress from "./pages/UserProfile/EditAddress.jsx"
+import Wishlist from "./pages/Home/Wishlist.jsx"
+import Cart from "./pages/Home/Cart.jsx"
+import { fetchCart } from "./Store/user/cartSlice.js"
 
 function App() {
 
@@ -54,6 +57,10 @@ function App() {
       dispatch(fetchAdminData())
     }
   }, [])
+
+  useEffect(()=>{
+    dispatch(fetchCart())
+  },[isLoggedIn , dispatch])
 
   useEffect(() => {
     async function getUser() {
@@ -83,6 +90,7 @@ function App() {
     }
     getUser()
   }, [])
+
 
   return (
     <>
@@ -132,6 +140,16 @@ function App() {
         <Route path="/profile/address/:id/edit" element={
           <UserProtectedRoute>
             <EditAddress />
+          </UserProtectedRoute>
+        } />
+        <Route path="/wishlist" element={
+          <UserProtectedRoute>
+            <Wishlist/>
+          </UserProtectedRoute>
+        } />
+        <Route path="/cart" element={
+          <UserProtectedRoute>
+            <Cart />
           </UserProtectedRoute>
         } />
  

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Images from '../../Components/Images'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import axiosInstance from '../../Helper/AxiosInstance'
 import { Heart, Loader, ShoppingCart } from 'lucide-react'
@@ -8,30 +8,49 @@ import { useDispatch, useSelector } from 'react-redux'
 import Card from '../../Components/Card'
 import { productFetch } from '../../Store/user/Products'
 import Footer from '../../Components/Footer'
+import { fetchWishList } from '../../Store/user/wishlist'
+import { fetchCart } from '../../Store/user/cartSlice'
 
 const ProductDetail = () => {
     const { id } = useParams()
     const [product, setProduct] = useState()
     const [selectedVariant, setSelectedVariant] = useState(null)
     const [activeTab, setActiveTab] = useState('description')
-    const [loading, setLoading] = useState(false)
+    // const [loading, setLoading] = useState(false)
+    const user = useSelector(state => state.user.userData)
+    const wishlist = useSelector(state => state.wishlist?.wishlistData)
+    const cart = useSelector(state => state.cart?.cartData);
 
-    const navigate = useNavigate()
+    const cartItem = cart?.items?.find(item => item?.productId?._id == id && item?.sku == selectedVariant?.sku)
+
     const dispatch = useDispatch()
     const products = useSelector(state => state.product.productData)
+
+    const inWishlist = wishlist?.items?.some(item => item.productId?._id.toString() == id)
 
     useEffect(() => {
         dispatch(productFetch())
     }, [])
 
     useEffect(() => {
+        if (user?._id) {
+            dispatch(fetchWishList())
+        }
+    }, [user])
+
+    useEffect(() => {
         async function getProduct() {
-            setLoading(true)
+            // setLoading(true)
             try {
                 let { data } = await axiosInstance.get(`/api/products/${id}`)
                 if (data.success) {
                     setProduct(data.product)
-                    if (data.product.variants && data.product.variants.length > 0) {
+
+                    if (selectedVariant) {
+                        const updatedVariant = data.product.variants.find(variant => variant.sku == selectedVariant.sku)
+                        setSelectedVariant(updatedVariant || data.product.variants[0])
+                    }
+                    else {
                         setSelectedVariant(data.product.variants[0])
                     }
                 } else {
@@ -41,28 +60,106 @@ const ProductDetail = () => {
                 toast.error(error.message)
             }
             finally {
-                setLoading(false)
+                // setLoading(false)
             }
         }
         getProduct()
-    }, [id])
+    }, [id, cart])
 
     const handleVariantSelect = (variant) => {
         setSelectedVariant(variant)
     }
 
-    const handleAddToCart = () => {
-        let selectedProduct = { productID: product._id, sku: selectedVariant.sku }
-        console.log(selectedProduct)
+    const handleAddToCart = async () => {
+        let selectedProduct = { productId: product._id, sku: selectedVariant.sku }
+        try {
+
+            const { data } = await axiosInstance.post('/api/cart', selectedProduct)
+
+            if (data.success) {
+                dispatch(fetchCart())
+                dispatch(fetchWishList())
+                toast.success("Added to cart")
+            }
+            else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center py-20">
-                <Loader className="animate-spin text-gray-600" size={30} />
-            </div>
-        )
+    const handleWishlistClick = () => {
+        if (!user) {
+            toast.error("You are not LoggedIn");
+            return;
+        }
+
+        if (inWishlist) {
+            removeWishlist(product._id);
+        } else {
+            addToWishlist(product._id);
+        }
+    };
+
+    const removeWishlist = async (id) => {
+        try {
+            let { data } = await axiosInstance.delete(`/api/wishlist/${id}`)
+
+            if (data.success) {
+                toast.success("Removed from wishlist")
+                dispatch(fetchWishList())
+            }
+            else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
+
+    const addToWishlist = async (id) => {
+        try {
+            let { data } = await axiosInstance.post('/api/wishlist', { productId: id })
+
+            if (data.success) {
+                toast.success("Added to wishlist")
+                dispatch(fetchWishList())
+            }
+            else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    const decrementCart = async () => {
+        try {
+
+            let { data } = await axiosInstance.patch('/api/cart', { productId: id, sku: selectedVariant.sku })
+
+            if (data.success) {
+                dispatch(fetchCart())
+                toast.success(data.message)
+            }
+            else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    // if (loading) {
+    //     return (
+    //         <div className="flex justify-center items-center py-20">
+    //             <Loader className="animate-spin text-gray-600" size={30} />
+    //         </div>
+    //     )
+    // }
 
     return (
         <>
@@ -87,8 +184,8 @@ const ProductDetail = () => {
                                         key={val.sku}
                                         onClick={() => handleVariantSelect(val)}
                                         className={`px-3 py-2 border rounded text-xs md:text-base w-[80px] md:w-auto 
-                                        ${selectedVariant?.sku === val.sku? 'border-gray-900 bg-gray-900 text-white'
-                                        : 'border-gray-300 hover:border-gray-400'}`}>
+                                        ${selectedVariant?.sku === val.sku ? 'border-gray-900 bg-gray-900 text-white'
+                                                : 'border-gray-300 hover:border-gray-400'}`}>
                                         {val.size}
                                     </button>
                                 ))}
@@ -102,27 +199,59 @@ const ProductDetail = () => {
                                     <span className="text-black line-through text-sm md:text-lg">
                                         ₹{selectedVariant.price || selectedVariant.price}
                                     </span>
-                                    <span className='text-red-600 text-sm'>{selectedVariant?.quantity <= 0 ? "Out of stock" : ""}</span>
+                                    <span className='text-red-600 text-sm'>{selectedVariant?.quantity <= 0 ? "Stock out" : ""}</span>
                                 </div>
                             </div>
                         )}
 
                         <div className="flex flex-col md:flex-row gap-2 md:gap-4 mt-auto">
-                            <button className="w-full bg-black text-white py-2 md:py-3 rounded font-medium hover:bg-gray-800 flex items-center justify-center gap-2"
-                                onClick={() => {
-                                    if (selectedVariant.quantity <= 0) {
-                                        toast.error("Stock out")
-                                        navigate("/shop")
-                                    } else {
-                                        handleAddToCart()
-                                    }
-                                }}>
-                                <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
-                                Add to Cart
-                            </button>
-                            <button className="w-full bg-white border border-gray-900 text-gray-900 py-2 md:py-3 rounded font-medium hover:bg-gray-100 flex items-center justify-center gap-2">
-                                <Heart className="w-4 h-4 md:w-5 md:h-5" />
-                                Add to Wishlist
+                            {cartItem ? (
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        className="px-3 py-1 bg-gray-200 hover:bg-red-400 text-xl rounded"
+                                        onClick={() => decrementCart()}
+                                    >
+                                        -
+                                    </button>
+                                    <span className="px-3 py-1 border rounded">{cartItem.quantity}</span>
+                                    <button
+                                        className={`px-3 py-1 bg-gray-800 text-white text-xl hover:bg-gray-900 rounded 
+                                        ${selectedVariant?.quantity <= 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-900'}`}
+                                        disabled={selectedVariant?.quantity <= 0}
+                                        onClick={() => handleAddToCart()}
+                                    >
+                                        +
+                                    </button>
+
+                                </div>
+                            ) : (
+                                <button
+                                    className={`w-full py-2 md:py-3 rounded font-medium flex items-center justify-center gap-2 
+                                            ${selectedVariant?.quantity <= 0
+                                            ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                                            : 'bg-black text-white hover:bg-gray-900'}`}
+                                    disabled={selectedVariant?.quantity <= 0}
+                                    onClick={() => {
+                                        if (!user) toast.error("You are not LoggedIn");
+                                        else if (selectedVariant.quantity <= 0) toast.error("Stock out");
+                                        else handleAddToCart();
+                                    }}
+                                >
+                                    <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
+                                    Add to Cart
+                                </button>
+
+                            )}
+
+                            <button
+                                className={`w-full py-2 md:py-3 rounded font-medium flex items-center justify-center gap-2
+                                        ${inWishlist
+                                        ? 'bg-red-600 text-white border-red-600 hover:bg-red-700'
+                                        : 'bg-white border border-gray-900 text-gray-900 hover:bg-gray-100'}`}
+                                onClick={handleWishlistClick}
+                            >
+                                <Heart className={`w-4 h-4 md:w-5 md:h-5 ${inWishlist ? 'text-white' : ''}`} />
+                                {inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
                             </button>
                         </div>
                     </div>
@@ -134,15 +263,15 @@ const ProductDetail = () => {
                             <button
                                 onClick={() => setActiveTab('reviews')}
                                 className={`w-1/2 px-3 md:px-8 py-2 md:py-4 font-medium border-b-2 transition-colors 
-                                    ${activeTab === 'reviews'? 'border-gray-900 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
+                                    ${activeTab === 'reviews' ? 'border-gray-900 text-gray-900'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
                                 All Reviews
                             </button>
                             <button
                                 onClick={() => setActiveTab('description')}
                                 className={`w-1/2 px-3 md:px-8 py-2 md:py-4 font-medium border-b-2 transition-colors 
-                                ${activeTab === 'description'? 'border-gray-900 text-gray-900'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
+                                ${activeTab === 'description' ? 'border-gray-900 text-gray-900'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
                                 Description
                             </button>
                         </div>

@@ -9,6 +9,8 @@ import passport from "./confiq/passport.js"
 import AdminRouter from "./routes/Admin/AdminRouter.js"
 import productRouter from "./routes/productRoutes.js"
 import categoryRouter from "./routes/categoryRoutes.js"
+import wishlistRouter from "./routes/wishlistRoutes.js"
+import cartRouter from "./routes/cartRoutes.js"
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -36,6 +38,8 @@ app.use('/api/user' , userRouter)
 app.use('/api/admin' , AdminRouter)
 app.use('/api/products' , productRouter)
 app.use('/api/categories' , categoryRouter)
+app.use('/api/wishlist' , wishlistRouter)
+app.use('/api/cart' , cartRouter)
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -6,6 +6,8 @@ import { logout } from '../Store/user/UserSlice';
 import axiosInstance from '../Helper/AxiosInstance';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { useEffect } from 'react';
+import { fetchCart } from '../Store/user/cartSlice';
 
 const Navbar = () => {
 
@@ -16,6 +18,11 @@ const Navbar = () => {
     const backendurl = import.meta.env.VITE_BACKEND_URL;
     const navigate = useNavigate()
 
+    const cartCount = useSelector(state => state.cart?.cartData?.items);
+
+    useEffect(()=>{
+        dispatch(fetchCart())
+    },[dispatch])
 
     function handleAccountClick() {
         if (!isLoggedIn) {
@@ -41,6 +48,7 @@ const Navbar = () => {
                     const res = await axiosInstance.post(backendurl + '/api/auth/logout');
                     if (res.data.success) {
                         dispatch(logout());
+                        dispatch(fetchCart())
                         toast.success("logout Successfully")
                         navigate('/');
                     }
@@ -77,15 +85,15 @@ const Navbar = () => {
                         </div>
 
                         <div className="flex items-center space-x-3 sm:space-x-6">
-                            <button className="hidden sm:block text-neutral-400 hover:text-white transition">
+                            <Link to={"/wishlist"} className="hidden sm:block text-neutral-400 hover:text-white transition">
                                 <Heart size={20} />
-                            </button>
-                            <button className="text-neutral-400 hover:text-white transition relative">
+                            </Link>
+                            <Link to={"/cart"} className="text-neutral-400 hover:text-white transition relative">
                                 <ShoppingCart size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
                                 <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                                    0
+                                    {cartCount?.reduce((count , item)=> count + item.quantity , 0) || 0}
                                 </span>
-                            </button>
+                            </Link>
                             <button
                                 onClick={handleAccountClick}
                                 className={`hidden sm:flex items-center justify-center gap-1 px-3 py-1 border border-white rounded-md text-sm transition 
