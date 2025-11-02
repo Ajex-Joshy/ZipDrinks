@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Loader, X } from 'lucide-react';
+import { Heart, Loader, X } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { productFetch } from '../../Store/user/Products';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,8 +7,13 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../../Helper/AxiosInstance';
 import Card from '../../Components/Card';
 import Footer from '../../Components/Footer';
+import { fetchWishList } from '../../Store/user/wishlist';
+import Pagination from '../../Components/pagination';
 
 const Shop = () => {
+
+    const wishlist = useSelector(state => state.wishlist?.wishlistData)
+
     const [searchQuery, setSearchQuery] = useSearchParams();
 
     const [searchTerm, setSearchTerm] = useState(searchQuery.get('search') || '');
@@ -17,7 +22,7 @@ const Shop = () => {
     const [sortBy, setSortBy] = useState(searchQuery.get('sort') || '');
     const [currPage, setCurrPage] = useState(parseInt(searchQuery.get('page')) || 1);
 
-    const { productData, totalPages, currentPage, loading } = useSelector((state) => state.product);
+    const { productData, totalPages, loading } = useSelector((state) => state.product);
 
     const [categories, setCategories] = useState([]);
     const itemsPerPage = 12;
@@ -80,6 +85,38 @@ const Shop = () => {
         }
         getCategories();
     }, []);
+
+    const addToWishlist = async (id) => {
+        try {
+            let { data } = await axiosInstance.post('/api/wishlist', { productId: id })
+
+            if (data.success) {
+                toast.success("Added to wishlist")
+                dispatch(fetchWishList())
+            }
+            else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+    const removeWishlist = async (id) => {
+        try {
+            let { data } = await axiosInstance.delete(`/api/wishlist/${id}`)
+
+            if (data.success) {
+                toast.success("Removed from wishlist")
+                dispatch(fetchWishList())
+            }
+            else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
 
     if (loading) {
         return (
@@ -173,6 +210,8 @@ const Shop = () => {
                                     ))}
                                 </div>
                             </div>
+                            {sizeFilter.length > 0 || categoryFilter.length > 0 ? (
+
                             <button
                                 onClick={() => {
                                     setCategoryFilter([]);
@@ -182,57 +221,54 @@ const Shop = () => {
                             >
                                 Clear Filters
                             </button>
+                            ) : ""}
                         </div>
                     </aside>
 
                     <div className="flex-1">
 
-                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 mb-8">
                             {productData?.length == 0 ? <p>No Products Found</p>
                                 :
                                 (
-                                    productData?.map((product) => (
-                                        <Card
-                                            key={product._id}
-                                            id={product._id}
-                                            image={product.coverImage || product.images[0]}
-                                            name={product.name}
-                                            category={product.category}
-                                            price={product.variants[0].salePrice}
-                                        />
-                                    ))
+                                    productData?.map((product) => {
+                                        const inWishlist = wishlist?.items?.some(item => item.productId._id.toString() == product._id)
+                                        return (
+                                            <div
+                                                key={product?._id}
+                                                className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition p-2 flex flex-col items-center"
+                                            >
+
+                                                <Card
+                                                    id={product?._id}
+                                                    image={product?.coverImage || product?.images?.[0]}
+                                                    name={product?.name}
+                                                    category={product?.category}
+                                                    price={product?.variants[0].price}
+                                                    salePrice={product?.variants[0].salePrice}
+                                                    appliedOffer={product?.appliedOffer}
+                                                />
+
+                                                <button
+                                                    className={`w-full py-2 mt-2 md:py-3 rounded font-medium flex items-center justify-center gap-2
+                                                                                    ${inWishlist
+                                                            ? 'bg-red-600 text-white border-red-600 hover:bg-red-700'
+                                                            : 'bg-white border border-gray-900 text-gray-900 hover:bg-gray-100'}`}
+                                                    onClick={() => inWishlist ? removeWishlist(product._id) : addToWishlist(product._id)}
+                                                >
+                                                    <Heart className={`w-4 h-4 md:w-5 md:h-5 ${inWishlist ? 'text-white' : ''}`} />
+                                                    {inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+                                                </button>
+                                            </div>
+                                        )
+                                    })
                                 )
                             }
                         </div>
 
-                        {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-2">
-
-                                <button onClick={() => setCurrPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}
-                                    className="w-8 h-8 flex items-center justify-center rounded bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                    ‹
-                                </button>
-
-                                {[...Array(totalPages)].map((_, i) => (
-                                    <button
-                                        key={i + 1}
-                                        onClick={() => setCurrPage(i + 1)}
-                                        className={`w-8 h-8 flex items-center justify-center rounded font-medium ${currentPage === i + 1
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                                            }`}
-                                    >
-                                        {i + 1}
-                                    </button>
-                                ))}
-
-                                <button onClick={() => setCurrPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                                    className="w-8 h-8 flex items-center justify-center rounded bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-                                    ›
-                                </button>
-                            </div>
-                        )}
-
+                        <div className="flex justify-center items-center gap-2">
+                            <Pagination setCurrentPage={setCurrPage} currentPage={currPage} totalPages={totalPages} />                                
+                        </div>
                     </div>
                 </div>
             </div>

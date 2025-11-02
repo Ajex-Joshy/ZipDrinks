@@ -5,6 +5,7 @@ import { getAdminId } from "../../middlewares/Admin/adminAuth.js";
 import { blockUnblockCustomer, getCustomers } from "../../controllers/Admin/customersController.js";
 import { addCategory, categoryListUnlist, getCategories, singleCategory, updateCategory } from "../../controllers/Admin/CategoryController.js";
 import { addProducts, getProducts, productListUnlist, singleProduct, updateProduct } from "../../controllers/Admin/productController.js";
+import { approveOrderItemReturn, approveOrderReturn, changeOrderStatus, getOrders, getSingleOrder } from "../../controllers/Admin/orderController.js";
 
 const AdminRouter = express.Router()
 
@@ -23,5 +24,10 @@ AdminRouter.get('/products' , getProducts)
 AdminRouter.patch('/products/:productId' , productListUnlist)
 AdminRouter.get('/products/:productId' , singleProduct)
 AdminRouter.put('/products/:productId' , updateProduct)
+AdminRouter.get('/orders' , getOrders)
+AdminRouter.get('/orders/:orderId' , getSingleOrder)
+AdminRouter.put('/orders/:orderId/status' , changeOrderStatus)
+AdminRouter.patch('/orders/:orderId/return' , approveOrderReturn)
+AdminRouter.patch('/orders/:orderId/return-item' , approveOrderItemReturn)
 
 export default AdminRouter

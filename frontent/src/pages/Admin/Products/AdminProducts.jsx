@@ -4,6 +4,7 @@ import AdminMain from '../../../Components/Admin/AdminMain';
 import { Link, useSearchParams } from 'react-router-dom';
 import axiosInstance from '../../../Helper/AxiosInstance';
 import { toast } from 'react-toastify';
+import Pagination from '../../../Components/pagination';
 
 export default function AdminProducts() {
 
@@ -99,8 +100,6 @@ export default function AdminProducts() {
     setShowVariantModal(false);
     setSelectedProduct(null);
   };
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
 
   return (
     <AdminMain>
@@ -185,6 +184,7 @@ export default function AdminProducts() {
                     <tr>
                       <th className="px-6 py-3 text-left text-sm font-semibold">Product Name</th>
                       <th className="px-6 py-3 text-left text-sm font-semibold">Category</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold">Offer</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold">Variants</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold">Status</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold">Actions</th>
@@ -195,6 +195,7 @@ export default function AdminProducts() {
                       <tr key={product._id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b hover:bg-gray-50`}>
                         <td className="px-6 py-4 font-medium text-gray-800">{product.name}</td>
                         <td className="px-6 py-4 text-gray-600">{product.category}</td>
+                        <td className="px-6 py-4 text-gray-600">{product.offer}</td>
                         <td className="px-6 py-4 text-center">
                           <button
                             onClick={() => openVariantModal(product)}
@@ -233,38 +234,8 @@ export default function AdminProducts() {
                   Showing page {currentPage} of {totalPages} — Total {totalProducts} products
                 </span>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => paginate(currentPage - 1)}
-                    disabled={currentPage <= 1}
-                    className={`p-2 rounded-lg ${currentPage <= 1 ? 'text-gray-400' : 'text-gray-700 hover:bg-gray-100'}`}
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
+                <Pagination setCurrentPage={setCurrentPage} currentPage={currentPage} totalPages={totalPages} />
 
-                  {[...Array(totalPages)].map((_, index) => {
-                    const pageNumber = index + 1;
-                    return (
-                      <button
-                        key={pageNumber}
-                        onClick={() => paginate(pageNumber)}
-                        className={`px-3 py-1 rounded-lg ${currentPage === pageNumber ? 'bg-gray-900 text-white' : 'text-gray-700 hover:bg-gray-800'
-                          }`}
-                      >
-                        {pageNumber}
-                      </button>
-                    );
-                  })}
-
-                  <button
-                    onClick={() => paginate(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    className={`p-2 rounded-lg ${currentPage >= totalPages ? 'text-gray-400' : 'text-gray-700 hover:bg-gray-100'}`}
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-
-                </div>
               </div>
             </div>
           )}

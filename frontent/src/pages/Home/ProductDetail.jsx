@@ -326,7 +326,9 @@ const ProductDetail = () => {
                                     image={product.images[0]}
                                     name={product.name}
                                     category={product.category}
-                                    price={product.variants[0].salePrice}
+                                    price={product.variants[0].price}
+                                    salePrice={product.variants[0].salePrice}
+                                    appliedOffer={product?.appliedOffer}
                                 />
                             ))}
                         </div>

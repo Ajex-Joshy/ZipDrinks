@@ -11,6 +11,8 @@ import productRouter from "./routes/productRoutes.js"
 import categoryRouter from "./routes/categoryRoutes.js"
 import wishlistRouter from "./routes/wishlistRoutes.js"
 import cartRouter from "./routes/cartRoutes.js"
+import orderRouter from "./routes/orderRoutes.js"
+import logger from "./logger.js"
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -40,12 +42,13 @@ app.use('/api/products' , productRouter)
 app.use('/api/categories' , categoryRouter)
 app.use('/api/wishlist' , wishlistRouter)
 app.use('/api/cart' , cartRouter)
+app.use('/api/order' , orderRouter)
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err.stack);
   res.status(500).json({ success: false, message: 'Server Error' });
 });
 
 app.listen(port , ()=>{
-    console.log(`Server running on port http://localhost:${port}`)
+    logger.info(`Server running on port http://localhost:${port}`)
 })

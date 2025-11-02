@@ -66,7 +66,7 @@ const Navbar = () => {
     return (
         <div>
             <div className="border-b bg-gray-50 border-neutral-700 py-2 text-center text-xs sm:text-sm text-black">
-                <span className="sm:inline">Get 10% off for New Customers</span>
+                <span className="sm:inline">Get 10% off for First Customers</span>
             </div>
             <header className="bg-black text-white">
                 <div className="container mx-auto px-4">

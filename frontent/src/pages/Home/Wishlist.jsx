@@ -70,7 +70,7 @@ const Wishlist = () => {
       </div>
 
       {/* Wishlist Items */}
-      {wishlist?.items?.length === 0 ? (
+      {wishlist?.items?.length === 0 || !wishlist ? (
         <p className="text-center text-gray-600 text-lg">No Products Found</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
@@ -86,7 +86,9 @@ const Wishlist = () => {
                   image={p?.coverImage || p?.images?.[0]}
                   name={p?.name}
                   category={p?.category}
-                  price={p?.variants?.[0]?.salePrice}
+                  price={p?.variants[0].price}
+                  salePrice={p?.variants[0].salePrice}
+                  appliedOffer={p?.appliedOffer}
                 />
 
                 <div className="w-full mt-3 flex flex-col gap-2">

@@ -7,12 +7,12 @@ export const getUserCategoriesService = async (req , res)=>{
         let categories = await categoryModel.find({ isListed : true})
 
         if(!categories){
-            return res.json({success : false , message : "Something went wrong !"})
+            return res.status(404).json({success : false , message : "Something went wrong !"})
         }
 
-        res.json({success : true , message : "category fetched successfully" , categories})
+        res.status(200).json({success : true , message : "category fetched successfully" , categories})
         
     } catch (error) {
-        res.json({success : false , message : error.message})
+        res.status(500).json({success : false , message : error.message})
     }
 }

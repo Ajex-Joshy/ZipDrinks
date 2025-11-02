@@ -7,16 +7,16 @@ export const getAdminDataService = async (req, res) => {
         const user = await userModel.findById(userId);
 
         if (!user) {
-            return res.json({ success: false, message: "User not found" });
+            return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        return res.json({
+        return res.status(200).json({
             success: true, userData: {
                 fullname: user.fullname, email: user.email, isAdmin: user.isAdmin,
             }
         });
 
     } catch (error) {
-        return res.json({ success: false, message: error.message });
+        return res.status(500).json({ success: false, message: error.message });
     }
 }

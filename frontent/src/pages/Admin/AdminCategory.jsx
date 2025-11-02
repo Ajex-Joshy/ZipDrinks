@@ -5,6 +5,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../Helper/AxiosInstance';
 import { Loader } from 'react-feather';
+import Pagination from '../../Components/pagination';
 
 export default function AdminCategory() {
   const [categories, setCategories] = useState([]);
@@ -85,21 +86,6 @@ export default function AdminCategory() {
     getCategories();
   }, [searchTerm, sortBy, currentPage]);
 
-  const getPageNumbers = () => {
-    const pages = [];
-    if (totalPages <= 5) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      if (currentPage <= 3) {
-        pages.push(1, 2, 3, '...', totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        pages.push(1, '...', totalPages - 2, totalPages - 1, totalPages);
-      } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-      }
-    }
-    return pages;
-  };
 
   return (
     <AdminMain>
@@ -183,7 +169,7 @@ export default function AdminCategory() {
                       {categories.map((category, index) => (
                         <tr key={category._id} className="hover:bg-gray-50">
                           <td className="px-4 py-4 text-sm text-gray-900">{index + 1}</td>
-                          <td className="px-4 py-4 text-sm text-gray-900">{category.name}</td>
+                          <td className="px-4 py-4 text-sm text-gray-900"><img src={category.image} alt={category.name} className='h-10 w-16' />{category.name}</td>
                           <td className="px-4 py-4 text-sm text-gray-900">
                             {new Date(category.createdAt).toLocaleDateString()}
                           </td>
@@ -208,9 +194,6 @@ export default function AdminCategory() {
 
                           <td className="px-4 py-4">
                             <div className="flex items-center gap-2">
-                              <button className="p-1.5 hover:bg-gray-100 rounded">
-                                <Eye className="w-4 h-4 text-gray-600" />
-                              </button>
                               <Link
                                 to={`/admin/categories/${category._id}/edit-category`}
                                 className="p-1.5 hover:bg-gray-100 rounded"
@@ -229,42 +212,14 @@ export default function AdminCategory() {
                   </table>
                 </div>
 
-                <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="mt-6 flex p-2 flex-col sm:flex-row items-center justify-between gap-4">
                   <p className="text-sm text-gray-600">
                     Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
                     {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} entries
                   </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      disabled={currentPage === 1}
-                      className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-                    {getPageNumbers().map((page, i) =>
-                      page === '...' ? (
-                        <span key={i} className="px-3 py-2 text-gray-500">
-                          ...
-                        </span>
-                      ) : (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-2 rounded-lg transition-colors ${currentPage === page
-                            ? 'bg-gray-800 text-white' : 'border border-gray-300 hover:bg-gray-50'}`}>
-                          {page}
-                        </button>
-                      )
-                    )}
-                    <button
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
-                      className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-                  </div>
+
+                  <Pagination setCurrentPage={setCurrentPage} currentPage={currentPage} totalPages={totalPages} />
+
                 </div>
 
                 <div className="md:hidden divide-y divide-gray-200">
@@ -272,8 +227,8 @@ export default function AdminCategory() {
                     <div key={category._id} className="p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div>
-                          <h3 className="font-semibold text-gray-900">{category.name}</h3>
                           <p className="text-sm text-gray-600">SI: {index + 1}</p>
+                          <h3 className="font-semibold text-gray-900"><img src={category.image} alt={category.name} className='h-10 w-16' />{category.name}</h3>
                         </div>
                         <button
                           onClick={() => handleToggleListed(category._id)}
@@ -301,10 +256,6 @@ export default function AdminCategory() {
                       </div>
 
                       <div className="flex items-center gap-2 pt-3 border-t border-gray-200">
-                        <button className="flex-1 py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center gap-2">
-                          <Eye className="w-4 h-4" />
-                          <span className="text-sm">View</span>
-                        </button>
                         <Link
                           to={`/admin/categories/${category._id}/edit-category`}
                           className="flex-1 py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded flex items-center justify-center gap-2"

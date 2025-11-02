@@ -29,7 +29,7 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
         if (category && Object.keys(category).length > 0) {
             reset({
                 name: category?.name || "",
-                description: category?.name || "",
+                description: category?.description || "",
                 offer: category?.offer || "",
                 maxRedeem: category?.maxRedeem || "",
             })

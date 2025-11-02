@@ -2,13 +2,19 @@ import React from 'react';
 import { Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const Card = ({ id, image, name, category, price, }) => {
+const Card = ({ id, image, name, category, price, salePrice, appliedOffer }) => {
 
     const navigate = useNavigate()
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 hover:shadow-xl duration-300 w-full max-w-xs"
-            onClick={()=> navigate(`/products/${id}`)}>
+        <div className="relative bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-102 hover:shadow-xl duration-300 w-full max-w-xs"
+            onClick={() => navigate(`/products/${id}`)}>
+
+            {appliedOffer && (
+                <span className="absolute top-2 right-2 z-50 bg-green-600 text-white text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
+                    {appliedOffer}
+                </span>
+            )}
 
             <div className="relative bg-gray-50 h-56 flex items-center justify-center p-4">
                 <img
@@ -28,8 +34,11 @@ const Card = ({ id, image, name, category, price, }) => {
                     {category}
                 </h5>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-start">
                     <span className="text-xl font-bold text-gray-900">
+                        ₹{salePrice.toFixed(2)}
+                    </span>
+                    <span className="text-md line-through text-gray-700 ms-4 mt-1">
                         ₹{price.toFixed(2)}
                     </span>
                 </div>

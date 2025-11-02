@@ -35,16 +35,8 @@ const Cart = () => {
         }
     }
 
-    // if (loading) {
-    //     return (
-    //         <div className="flex justify-center items-center py-20">
-    //             <Loader className="animate-spin text-gray-600" size={30} />
-    //         </div>
-    //     )
-    // }
 
-
-    if (cartItems?.items?.length === 0) {
+    if (cartItems?.items?.length === 0 || !cartItems) {
         return (
             <div className="flex flex-col justify-center items-center py-20 px-6 rounded-2xl shadow-inner">
 
@@ -83,10 +75,10 @@ const Cart = () => {
 
                 {/* Action Buttons */}
                 <div className="p-4 sm:p-6 space-y-3">
-                    <button className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 transition-colors text-sm sm:text-base font-medium">
+                    <Link to={"/checkout"} className="block w-full bg-gray-900 text-white text-center py-3 rounded hover:bg-black transition-colors text-sm sm:text-base font-medium">
                         Proceed to checkout
-                    </button>
-                    <Link to={"/shop"} className="block w-full bg-black text-white text-center py-3 rounded hover:bg-gray-800 transition-colors text-sm sm:text-base font-medium">
+                    </Link>
+                    <Link to={"/shop"} className="block w-full bg-gray-900 text-white text-center py-3 rounded hover:bg-black transition-colors text-sm sm:text-base font-medium">
                         Continue shopping
                     </Link>
                 </div>

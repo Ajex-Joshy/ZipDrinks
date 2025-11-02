@@ -51,11 +51,11 @@ export const getAllProductsService = async (req, res) => {
 
     const totalItems = await productModel.countDocuments(query);
 
-    res.json({ success: true, message: "Products fetched successfully", products, totalItems,
+    res.status(200).json({ success: true, message: "Products fetched successfully", products, totalItems,
         totalPages: limit ? Math.ceil(totalItems / limit) : 1, currentPage: page });
 
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -68,12 +68,12 @@ export const getSingleProductService = async(req , res)=>{
         const product = await productModel.findById(productId);
 
         if(!product){
-            return res.json({success : false , message : "Something went wrong !"})
+            return res.status(404).json({success : false , message : "Something went wrong !"})
         }
 
-        res.json({success : true , message : "product fetched successfully" , product})
+        res.status(200).json({success : true , message : "product fetched successfully" , product})
         
      } catch (error) {
-        res.json({success : false , message : error.message})
+        res.status(500).json({success : false , message : error.message})
      }
 }

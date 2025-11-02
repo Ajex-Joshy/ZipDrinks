@@ -4,12 +4,12 @@ import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-const AddressForm = ({ addressSubmit, address }) => {
+const AddressForm = ({ addressSubmit, address , checkout }) => {
 
     const { register, formState: { errors }, handleSubmit, reset } = useForm({
         defaultValues: {
             fullname: address?.fullname || "",
-            phone: address?.phone || "",
+            phone: address?.phone.split(' ')[1] || "",
             address: address?.address || "",
             district: address?.district || "",
             state: address?.state || "",
@@ -22,7 +22,7 @@ const AddressForm = ({ addressSubmit, address }) => {
         if (address && Object.keys(address).length > 0) {
             reset({
                 fullname: address?.fullname || "",
-                phone: address?.phone || "",
+                phone: address?.phone.split(' ')[1] || "",
                 address: address?.address || "",
                 district: address?.district || "",
                 state: address?.state || "",
@@ -138,7 +138,7 @@ const AddressForm = ({ addressSubmit, address }) => {
                                 placeholder="eg : Hospital"
                                 {...register("landmark", {
                                     required: { value: true, message: "City is required !" },
-                                    validate: (val) => val === val.trim() || "Enter valid City !"
+                                    validate: (val) => val === val.trim() || "Enter valid landmark !"
                                 })}
                                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-md 
                 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:bg-white transition"
@@ -163,12 +163,14 @@ const AddressForm = ({ addressSubmit, address }) => {
 
                     {/* Buttons */}
                     <div className="flex justify-end gap-4 pt-6">
+                        {checkout ? "" : (
                         <Link to={"/profile/address"}
                             type="button"
                             className="px-6 py-3 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 transition"
                         >
                             Cancel
                         </Link>
+                        )}
                         <button
                             type="submit"
                             disabled={loading}
