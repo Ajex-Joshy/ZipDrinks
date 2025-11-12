@@ -528,7 +528,7 @@ export const downloadOrderInvoiceService = async (req, res) => {
     let totalPayable = Math.max(0, baseSubtotal + taxAmount);
     totalPayable = Math.round(totalPayable)    
 
-    // ========== GENERATE PDF ==========
+    //GENERATE PDF 
     const doc = new PDFDocument({ margin: 50 });
     const filename = `Invoice_${order.orderId}.pdf`;
 
@@ -536,7 +536,7 @@ export const downloadOrderInvoiceService = async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
     doc.pipe(res);
 
-    // ========== HEADER ==========
+    // HEADER
     doc.fontSize(20).text("Order Invoice", { align: "center" });
     doc.moveDown(0.5);
     doc.fontSize(12).text(`Order ID: ${order.orderId}`);
@@ -549,7 +549,7 @@ export const downloadOrderInvoiceService = async (req, res) => {
     doc.text(`${order?.address?.state || "N/A"}`);
     doc.moveDown(1.5);
 
-    // ========== ITEMS ==========
+    // ITEMS
     doc.fontSize(14).text("Order Items", { underline: true });
     doc.moveDown(0.5);
 
@@ -565,7 +565,7 @@ export const downloadOrderInvoiceService = async (req, res) => {
         .moveDown(0.5);
     });
 
-    // ========== SUMMARY ==========
+    //  SUMMARY 
     doc.moveDown(1);
     doc.fontSize(14).text("Payment Summary", { underline: true });
     doc.moveDown(0.5);
@@ -586,7 +586,7 @@ export const downloadOrderInvoiceService = async (req, res) => {
       .text(`Total Payable: Rs ${totalPayable.toFixed(2)}`, { align: "left" });
     doc.font("Helvetica");
 
-    // ========== FOOTER ==========
+    // FOOTER 
     doc.moveDown(2);
     doc.fontSize(10).text("Thank you for shopping with us!", { align: "center" });
     doc.fontSize(9).text("This is a system-generated invoice.", { align: "center" });
@@ -603,21 +603,8 @@ export const downloadOrderInvoiceService = async (req, res) => {
 
 export const verifyPaymentService = async (req, res) => {
     try {
-        const {
-            razorpay_order_id,
-            razorpay_payment_id,
-            razorpay_signature,
-            orderId,
-            userId,
-            address,
-            products,
-            subTotal,
-            deliveryFee,
-            taxAmount,
-            totalAmount,
-            couponId,
-            couponAmount
-        } = req.body;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId, userId, address, products, subTotal, deliveryFee,
+            taxAmount, totalAmount, couponId, couponAmount } = req.body;
 
         const body = razorpay_order_id + "|" + razorpay_payment_id;
 
@@ -647,15 +634,7 @@ export const verifyPaymentService = async (req, res) => {
             await cart.save();
         }
 
-        const order = new orderModel({
-            userId,
-            orderId,
-            address,
-            items: products,
-            subTotal,
-            deliveryFee,
-            taxAmount,
-            totalAmount,
+        const order = new orderModel({ userId, orderId, address, items: products, subTotal, deliveryFee, taxAmount, totalAmount, 
             paymentMethod: "Razorpay",
             paymentStatus: "paid",
             transactions: [

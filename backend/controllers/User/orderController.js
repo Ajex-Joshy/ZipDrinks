@@ -41,6 +41,7 @@ export const downloadOrderInvoice = async(req , res)=>{
     await downloadOrderInvoiceService(req , res)
 }
 
+// verify payment
 export const verifyPayment = async(req , res)=>{
     await verifyPaymentService(req , res)
 }
