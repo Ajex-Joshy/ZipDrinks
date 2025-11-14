@@ -6,131 +6,294 @@ import ExcelJS from "exceljs";
 
 export const getSales = async (req, res) => {
 
-    let { filter, startDate, endDate } = req.query
+  let { filter, startDate, endDate } = req.query
 
-    try {
+  try {
 
-        let { allOrders, sales } = await getSalesService(filter, startDate, endDate)
+    let { allOrders, sales } = await getSalesService(filter, startDate, endDate)
 
-        if (!sales || !allOrders) {
-            return res.status(404).json({ success: false, message: "No Sales found !" })
-        }
-
-        res.status(200).json({ success: true, message: "Sales fetched successfully", allOrders, sales })
-
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message })
+    if (!sales || !allOrders) {
+      return res.status(404).json({ success: false, message: "No Sales found !" })
     }
+
+    res.status(200).json({ success: true, message: "Sales fetched successfully", allOrders, sales })
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
 
 }
 
 // sales pdf
 
+// export const generateSalesPdf = async (req, res) => {
+//     try {
+//         const { filter, startDate, endDate } = req.query;
+
+//         const data = await getSalesService(filter, startDate, endDate);
+
+//         if (!data || !data.allOrders || data.allOrders.length === 0) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "No orders found for the selected filter.",
+//             });
+//         }
+
+//         const { allOrders, sales } = data;
+
+//         // Create a PDF document
+//         const doc = new PDFDocument({ margin: 40, size: "A4" });
+
+//         //  Setup response headers for file download
+//         const fileName = `Sales_Report_${filter}_${new Date()
+//             .toISOString()
+//             .slice(0, 10)}.pdf`;
+//         res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+//         res.setHeader("Content-Type", "application/pdf");
+
+//         // Pipe PDF to response
+//         doc.pipe(res);
+
+//         //  Header / Title
+//         doc.fontSize(20).text("Sales Report", { align: "center" });
+//         doc.moveDown();
+//         doc.fontSize(12).text(`Filter: ${filter.toUpperCase()}`);
+//         if (filter === "custom" && startDate && endDate) {
+//             doc.text(`Date Range: ${startDate} → ${endDate}`);
+//         }
+//         doc.text(`Generated On: ${new Date().toLocaleString()}`);
+//         doc.moveDown(1);
+
+//         //  Summary Section
+//         doc.fontSize(12).text("Summary", { underline: true });
+//         doc.moveDown(0.5);
+//         doc.text(`Total Orders: ${sales?.totalOrders || 0}`);
+//         doc.text(`Total Revenue: Rs ${sales?.totalRevenue || 0}`);
+//         doc.text(`Total Discount: Rs ${sales?.totalDiscount || 0}`);
+//         doc.text(`Total Pendings: ${sales?.totalPendings || 0}`);
+//         doc.moveDown(1.5);
+
+//         //  Table Header
+//         const startX = 40;
+//         let y = doc.y;
+//         const tableWidth = 500;
+//         const columnWidths = [25, 80, 80, 60, 60, 60, 60];
+
+//         doc.fontSize(10).font("Helvetica-Bold");
+//         const headers = [
+//             "#",
+//             "Order ID",
+//             "Buyer",
+//             "Products",
+//             "Date",
+//             "Coupon",
+//             "Net (₹)",
+//         ];
+
+//         headers.forEach((header, i) => {
+//             doc.text(header, startX + i * 70, y, { width: columnWidths[i] });
+//         });
+//         y += 20;
+//         doc.moveTo(startX, y - 5).lineTo(startX + tableWidth, y - 5).stroke();
+
+//         //  Table Rows
+//         doc.font("Helvetica").fontSize(9);
+//         allOrders.forEach((order, index) => {
+//             if (y > 750) {
+//                 doc.addPage();
+//                 y = 50;
+//             }
+
+//             const orderValues = [
+//                 index + 1,
+//                 order.orderId || "-",
+//                 order.address?.fullname || "-",
+//                 order.items?.length || 0,
+//                 new Date(order.orderDate).toLocaleDateString(),
+//                 order.couponId?.couponCode || "-",
+//                 "Rs " + order.totalAmount.toFixed(2),
+//             ];
+
+//             orderValues.forEach((value, i) => {
+//                 doc.text(value.toString(), startX + i * 70, y, {
+//                     width: columnWidths[i],
+//                 });
+//             });
+
+//             y += 18;
+//         });
+
+//         doc.end();
+//     } catch (error) {
+//         return res.status(500).json({
+//             success: false,
+//             message: "Failed to generate PDF",
+//         });
+//     }
+// }
+
+
+
 export const generateSalesPdf = async (req, res) => {
-    try {
-        const { filter, startDate, endDate } = req.query;
+  try {
+    const { filter, startDate, endDate } = req.query;
+    const data = await getSalesService(filter, startDate, endDate);
 
-        const data = await getSalesService(filter, startDate, endDate);
-
-        if (!data || !data.allOrders || data.allOrders.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "No orders found for the selected filter.",
-            });
-        }
-
-        const { allOrders, sales } = data;
-
-        // Create a PDF document
-        const doc = new PDFDocument({ margin: 40, size: "A4" });
-
-        //  Setup response headers for file download
-        const fileName = `Sales_Report_${filter}_${new Date()
-            .toISOString()
-            .slice(0, 10)}.pdf`;
-        res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
-        res.setHeader("Content-Type", "application/pdf");
-
-        // Pipe PDF to response
-        doc.pipe(res);
-
-        //  Header / Title
-        doc.fontSize(20).text("Sales Report", { align: "center" });
-        doc.moveDown();
-        doc.fontSize(12).text(`Filter: ${filter.toUpperCase()}`);
-        if (filter === "custom" && startDate && endDate) {
-            doc.text(`Date Range: ${startDate} → ${endDate}`);
-        }
-        doc.text(`Generated On: ${new Date().toLocaleString()}`);
-        doc.moveDown(1);
-
-        //  Summary Section
-        doc.fontSize(12).text("Summary", { underline: true });
-        doc.moveDown(0.5);
-        doc.text(`Total Orders: ${sales?.totalOrders || 0}`);
-        doc.text(`Total Revenue: Rs ${sales?.totalRevenue || 0}`);
-        doc.text(`Total Discount: Rs ${sales?.totalDiscount || 0}`);
-        doc.text(`Total Pendings: ${sales?.totalPendings || 0}`);
-        doc.moveDown(1.5);
-
-        //  Table Header
-        const startX = 40;
-        let y = doc.y;
-        const tableWidth = 500;
-        const columnWidths = [25, 80, 80, 60, 60, 60, 60];
-
-        doc.fontSize(10).font("Helvetica-Bold");
-        const headers = [
-            "#",
-            "Order ID",
-            "Buyer",
-            "Products",
-            "Date",
-            "Coupon",
-            "Net (₹)",
-        ];
-
-        headers.forEach((header, i) => {
-            doc.text(header, startX + i * 70, y, { width: columnWidths[i] });
-        });
-        y += 20;
-        doc.moveTo(startX, y - 5).lineTo(startX + tableWidth, y - 5).stroke();
-
-        //  Table Rows
-        doc.font("Helvetica").fontSize(9);
-        allOrders.forEach((order, index) => {
-            if (y > 750) {
-                doc.addPage();
-                y = 50;
-            }
-
-            const orderValues = [
-                index + 1,
-                order.orderId || "-",
-                order.address?.fullname || "-",
-                order.items?.length || 0,
-                new Date(order.orderDate).toLocaleDateString(),
-                order.couponId?.couponCode || "-",
-                "Rs " + order.totalAmount.toFixed(2),
-            ];
-
-            orderValues.forEach((value, i) => {
-                doc.text(value.toString(), startX + i * 70, y, {
-                    width: columnWidths[i],
-                });
-            });
-
-            y += 18;
-        });
-
-        doc.end();
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to generate PDF",
-        });
+    if (!data || !data.allOrders || data.allOrders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found for the selected filter.",
+      });
     }
-}
+
+    const { allOrders, sales } = data;
+
+    const doc = new PDFDocument({ margin: 40, size: "A4", bufferPages: true });
+
+    const fileName = `Sales_Report_${filter}_${new Date()
+      .toISOString()
+      .slice(0, 10)}.pdf`;
+
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.setHeader("Content-Type", "application/pdf");
+
+    doc.pipe(res);
+
+    // -------------------------------
+    // HEADER SECTION (Branding)
+    // -------------------------------
+    doc
+      .fontSize(24)
+      .font("Helvetica-Bold")
+      .text("Sales Report", { align: "center" });
+
+    doc.moveDown(0.5);
+
+    doc
+      .fontSize(10)
+      .font("Helvetica")
+      .text(`Filter: ${filter.toUpperCase()}`, { align: "center" });
+
+    if (filter === "custom") {
+      doc.text(`Date Range: ${startDate} to ${endDate}`, { align: "center" });
+    }
+
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, { align: "center" });
+
+    doc.moveDown(1.5);
+
+    // -------------------------------
+    // SUMMARY SECTION (Clean Box)
+    // -------------------------------
+    doc.rect(40, doc.y, 515, 90).stroke("#D1D1D1");
+
+    let summaryY = doc.y + 10;
+
+    doc.fontSize(12).font("Helvetica-Bold").text("Summary", 50, summaryY);
+    summaryY += 20;
+
+    doc
+      .fontSize(10)
+      .font("Helvetica")
+      .text(`Total Orders: ${sales.totalOrders}`, 50, summaryY);
+    doc.text(`Total Revenue: Rs ${sales.totalRevenue}`, 200, summaryY);
+    doc.text(`Total Discount: Rs ${sales.totalDiscount}`, 350, summaryY);
+    summaryY += 20;
+
+    doc.text(`Pending Orders: ${sales.totalPendings}`, 50, summaryY);
+
+    doc.moveDown(4);
+
+    // -------------------------------
+    // TABLE HEADER
+    // -------------------------------
+    const tableX = 40;
+    let tableY = doc.y;
+
+    const headers = ["#", "Order ID", "Customer", "Items", "Date", "Coupon", "Net (₹)"];
+    const widths = [30, 90, 100, 50, 70, 80, 80];
+
+    // Header background
+    doc.rect(tableX, tableY, 515, 22).fill("#F1F1F1").stroke();
+    doc.fillColor("black");
+
+    let x = tableX;
+
+    doc.font("Helvetica-Bold").fontSize(10);
+    headers.forEach((h, i) => {
+      doc.text(h, x + 5, tableY + 6, { width: widths[i], align: "left" });
+      x += widths[i];
+    });
+
+    tableY += 32;
+
+    // -------------------------------
+    // TABLE ROWS
+    // -------------------------------
+    doc.font("Helvetica").fontSize(9);
+
+    allOrders.forEach((order, index) => {
+      // Page break logic
+      if (tableY > 750) {
+        doc.addPage();
+        tableY = 50;
+      }
+
+      const isEven = index % 2 === 0;
+      if (isEven) {
+        doc.rect(tableX, tableY+28, 515, 20).fill("#FAFAFA");
+        doc.fillColor("black");
+      }
+
+      let xx = tableX;
+
+      const rowValues = [
+        index + 1,
+        order.orderId,
+        order.address?.fullname || "-",
+        order.items?.length || 0,
+        new Date(order.orderDate).toLocaleDateString(),
+        order.couponId?.couponCode || "-",
+        "Rs " + order.totalAmount.toFixed(2),
+      ];
+
+      rowValues.forEach((val, i) => {
+        doc.text(val.toString(), xx + 5, tableY + 6, {
+          width: widths[i],
+        });
+        xx += widths[i];
+      });
+
+      tableY += 20;
+    });
+
+    // -------------------------------
+    // FOOTER (Page Numbers)
+    // -------------------------------
+    const range = doc.bufferedPageRange();
+    for (let i = 0; i < range.count; i++) {
+      doc.switchToPage(i);
+      doc
+        .fontSize(9)
+        .text(
+          `Page ${i + 1} of ${range.count}`,
+          0,
+          820,
+          { align: "center" }
+        );
+    }
+
+    doc.end();
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to generate PDF",
+    });
+  }
+};
+
+
 
 // sales excel
 

@@ -164,7 +164,8 @@ export default function AdminCategory() {
                         <th className="px-4 py-3 text-left text-sm font-semibold text-white">Added</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold text-white">List / Unlist</th>
                         <th className="px-4 py-3 text-left text-sm font-semibold text-white">Action</th>
-                        <th className="px-4 py-3 text-left text-sm font-semibold text-white">Offer</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-white">Offer (%)</th>
+                        <th className="px-4 py-3 text-left text-sm font-semibold text-white">Max Redeem</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -206,7 +207,10 @@ export default function AdminCategory() {
                           </td>
 
                           <td className="px-4 py-4 text-sm text-gray-900">
-                            {category.offer || '—'}
+                            {category.offer ? `${category.offer}%` : '—'}
+                          </td>
+                          <td className="px-4 py-4 text-sm text-gray-900">
+                            {category.maxRedeem || '—'}
                           </td>
                         </tr>
                       ))}

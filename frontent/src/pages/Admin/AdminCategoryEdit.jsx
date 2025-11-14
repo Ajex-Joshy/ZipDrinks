@@ -27,7 +27,7 @@ const AdminCategoryEdit = () => {
         }
         
       } catch (error) {
-        toast.error(error.message)
+        toast.error(error?.respose?.data.message)
       }
 
     }
@@ -42,7 +42,7 @@ const AdminCategoryEdit = () => {
       let res = await axiosInstance.put(`/api/admin/categories/${id}` , data)
 
       if(res.data.success){
-          toast.success("product updated Successfully")
+          toast.success("Cateogry updated Successfully")
           navigate('/admin/categories')
       }else{
         toast.error(res.data.message)

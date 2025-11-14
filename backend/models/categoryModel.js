@@ -18,7 +18,7 @@ const categorySchema = new mongoose.Schema({
         default : true
     },
     offer : {
-        type : String,
+        type : Number,
         default : null
     },
     maxRedeem : {

@@ -88,7 +88,7 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.response?.data.message)
         }
         finally {
             setLoading(false)
@@ -167,9 +167,9 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
                         Category Offer:
                     </label>
                     <input
-                        type="text"
-                        placeholder="20% or 50/-"
-                        {...register("offer", { pattern: { value: /^(100(\.0+)?%?|[0-9]?\d(\.\d+)?%?)$/, message: "Enter a valid offer (e.g. 20 or 20%)" } })}
+                        type="number"
+                        placeholder="20%"
+                        {...register("offer", { pattern: { value: /^(?:[0-9]|[1-9][0-9]|99)(?:\.\d+)?$/, message: "Enter a valid offer (e.g. 20)" } })}
                         className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
                     {errors.offer && <p className="text-red-500 text-sm mt-1">{errors.offer.message}</p>}

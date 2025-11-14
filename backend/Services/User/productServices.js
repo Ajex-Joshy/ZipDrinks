@@ -12,7 +12,7 @@ export const getAllProductsService = async (req, res) => {
     let query = { isListed: true };
 
     if (search.trim()) {
-      query.name = { $regex: `^${search.trim()}`, $options: "i" };
+      query.name = { $regex: `${search.trim()}`, $options: "i" };
     }
 
     if (category) {

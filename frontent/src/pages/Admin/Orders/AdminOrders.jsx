@@ -83,7 +83,7 @@ export default function AdminOrders() {
         }
       } catch (error) {
         setOrders([]);
-        toast.error(error.message);
+        toast.error(error.response.data.message);
       } finally {
         setLoading(false);
       }

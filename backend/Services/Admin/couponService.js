@@ -59,6 +59,9 @@ export const getCouponsService = async (req, res) => {
         else if (filter == "inactive"){
             query.isActive = false
         }
+        else if(filter == "expired"){
+            query.expiryDate = {$lt : new Date()}
+        }
 
         let totalCount = await couponModel.countDocuments(query)
 

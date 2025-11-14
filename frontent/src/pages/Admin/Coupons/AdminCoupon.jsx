@@ -165,6 +165,7 @@ export default function AdminCoupon() {
                     <option value="">Filter</option>
                     <option value="active">Active</option>
                     <option value="inactive">InActive</option>
+                    <option value="expired">Expired</option>
                   </select>
                 </div>
                 <Link to={"/admin/coupons/add-coupon"} className="px-4 py-2 text-sm bg-black text-white rounded-lg hover:bg-gray-800 flex items-center gap-2">

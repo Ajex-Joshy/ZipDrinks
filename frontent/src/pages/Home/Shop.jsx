@@ -212,15 +212,15 @@ const Shop = () => {
                             </div>
                             {sizeFilter.length > 0 || categoryFilter.length > 0 ? (
 
-                            <button
-                                onClick={() => {
-                                    setCategoryFilter([]);
-                                    setSizeFilter([]);
-                                }}
-                                className="px-3 py-1 text-sm text-gray-800 hover:text-red-500 border m-4 border-gray-400 rounded-md transition"
-                            >
-                                Clear Filters
-                            </button>
+                                <button
+                                    onClick={() => {
+                                        setCategoryFilter([]);
+                                        setSizeFilter([]);
+                                    }}
+                                    className="px-3 py-1 text-sm text-gray-800 hover:text-red-500 border m-4 border-gray-400 rounded-md transition"
+                                >
+                                    Clear Filters
+                                </button>
                             ) : ""}
                         </div>
                     </aside>
@@ -267,7 +267,7 @@ const Shop = () => {
                         </div>
 
                         <div className="flex justify-center items-center gap-2">
-                            <Pagination setCurrentPage={setCurrPage} currentPage={currPage} totalPages={totalPages} />                                
+                            <Pagination setCurrentPage={setCurrPage} currentPage={currPage} totalPages={totalPages} />
                         </div>
                     </div>
                 </div>

@@ -99,7 +99,7 @@ const ProductDetail = () => {
         if (inWishlist) {
             removeWishlist(product._id);
         } else {
-            addToWishlist(product._id , selectedVariant.sku);
+            addToWishlist(product._id, selectedVariant.sku);
         }
     };
 
@@ -131,7 +131,7 @@ const ProductDetail = () => {
                 toast.error(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.response?.data.message)
         }
     }
 
@@ -149,7 +149,7 @@ const ProductDetail = () => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.response?.data.message)
         }
     }
 
@@ -188,9 +188,11 @@ const ProductDetail = () => {
                             <div className="border-t border-b border-gray-200 py-3 mb-4">
                                 <div className="flex items-baseline gap-2 flex-wrap">
                                     <span className="text-lg md:text-2xl font-bold">₹{selectedVariant.salePrice.toFixed(2)}</span>
-                                    <span className="text-black line-through text-sm md:text-lg">
-                                        ₹{selectedVariant.price || selectedVariant.price}
-                                    </span>
+                                    {selectedVariant.price > selectedVariant.salePrice ? (
+                                        <span className="text-black line-through text-sm md:text-lg">
+                                            ₹{selectedVariant.price || selectedVariant.price}
+                                        </span>
+                                    ) : ""}
                                     <span className='text-red-600 text-sm'>{selectedVariant?.quantity <= 0 ? "Stock out" : ""}</span>
                                 </div>
                             </div>

@@ -185,6 +185,7 @@ export default function AdminProducts() {
                       <th className="px-6 py-3 text-left text-sm font-semibold">Product Name</th>
                       <th className="px-6 py-3 text-left text-sm font-semibold">Category</th>
                       <th className="px-6 py-3 text-left text-sm font-semibold">Offer</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold">Max Redeem</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold">Variants</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold">Status</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold">Actions</th>
@@ -195,7 +196,8 @@ export default function AdminProducts() {
                       <tr key={product._id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b hover:bg-gray-50`}>
                         <td className="px-6 py-4 font-medium text-gray-800">{product.name}</td>
                         <td className="px-6 py-4 text-gray-600">{product.category}</td>
-                        <td className="px-6 py-4 text-gray-600">{product.offer}</td>
+                        <td className="px-6 py-4 text-gray-600">{product.offer ? `${product.offer}%` : ""}</td>
+                        <td className="px-6 py-4 text-gray-600">{product.maxRedeem}</td>
                         <td className="px-6 py-4 text-center">
                           <button
                             onClick={() => openVariantModal(product)}

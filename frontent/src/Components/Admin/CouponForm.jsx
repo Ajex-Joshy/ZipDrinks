@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 
 export default function CouponForm({ couponSubmit, coupon }) {
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+    const { register, handleSubmit, formState: { errors }, reset , watch } = useForm({
         defaultValues: {
             couponCode: coupon?.couponCode || "",
             discount: coupon?.discount || "",
@@ -143,7 +143,13 @@ export default function CouponForm({ couponSubmit, coupon }) {
                                 name="minimumPurchase"
                                 {...register("minPurchase", {
                                     required: { value: true, message: "minimum purchase is required !" },
-                                    min: { value: 0, message: "minimum value must be 0" }
+                                    min: { value: 0, message: "minimum value must be 0" },
+                                    validate : (val)=> {
+                                        if(watch("discount").includes("%")){
+                                            return true
+                                        }
+                                        return Number(val) > parseInt(watch("discount")) || "Minimum purchase must be greater than discount !";
+                                    }
                                 })}
                                 className="flex-1 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />

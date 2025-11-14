@@ -36,7 +36,7 @@ const ProductSchema = new mongoose.Schema({
         required : true
     },
     offer : {
-        type : String,
+        type : Number,
         default : null
     },
     maxRedeem : {

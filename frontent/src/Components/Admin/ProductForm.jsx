@@ -36,14 +36,14 @@ const ProductForm = ({ productEditSubmit, product }) => {
                     toast.error(data.message)
                 }
             } catch (error) {
-                toast.error(error.message);
+                toast.error(error.response.data.message);
             }
         }
 
         getCategories();
     }, []);
 
-    const { register, control, handleSubmit, formState: { errors }, reset } = useForm({
+    const { register, control, handleSubmit, formState: { errors }, reset , watch } = useForm({
         defaultValues: {
             name: product?.name || "",
             category: product?.category || "",
@@ -166,7 +166,7 @@ const ProductForm = ({ productEditSubmit, product }) => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
         finally {
             setLoading(false)
@@ -225,12 +225,12 @@ const ProductForm = ({ productEditSubmit, product }) => {
                                 Product Offer:
                             </label>
                             <input
-                                type="text"
-                                placeholder="20% or 50/-"
+                                type="number"
+                                placeholder="20% "
                                 {...register("offer", {
                                     pattern: {
-                                        value: /^(\d{1,2}(\.\d+)?%|\d{1,5})$/,
-                                        message: "Enter valid offer (e.g., 20 or 20%)"
+                                        value: /^(?:[0-9]|[1-9][0-9]|99)(?:\.\d+)?$/,
+                                        message: "Enter valid offer (e.g., 20 )"
                                     }
                                 })}
                                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
@@ -380,7 +380,7 @@ const ProductForm = ({ productEditSubmit, product }) => {
                                     type="number"
                                     {...register(`variants.${index}.quantity`, {
                                         required: "Quantity is required!",
-                                        // min: { value: 0, message: "Minimum quantity must be > 0" },
+                                        min: { value: 0, message: "Minimum quantity must be greaterthan or equal to 0" },
                                         max: { value: 100000, message: "Too large quantity!" }
                                     })}
                                     placeholder="120"
@@ -395,7 +395,7 @@ const ProductForm = ({ productEditSubmit, product }) => {
                                     type="number"
                                     {...register(`variants.${index}.price`, {
                                         required: "Price is required!",
-                                        min: { value: 0, message: "Price must be >= 0" },
+                                        min: { value: 0, message: "Price must be greater 0" },
                                         max: { value: 100000, message: "Maximum 100000 allowed!" }
                                     })}
                                     placeholder="50"
@@ -410,8 +410,9 @@ const ProductForm = ({ productEditSubmit, product }) => {
                                     type="number"
                                     {...register(`variants.${index}.salePrice`, {
                                         required: "Sale price is required!",
-                                        min: { value: 0, message: "Sale price must be >= 0!" },
-                                        max: { value: 100000, message: "Maximum 100000 allowed!" }
+                                        min: { value: 0, message: "Sale price must be greaterthan 0!" },
+                                        max: { value: 100000, message: "Maximum 100000 allowed!" },
+                                        validate : (val)=> val <= watch(`variants.${index}.price`) || "sale price should be lessthan or equal to price !"
                                     })}
                                     placeholder="45"
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"

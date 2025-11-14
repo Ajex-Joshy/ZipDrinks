@@ -9,7 +9,7 @@ export const categoryAddService = async (req, res) => {
       return res.status(400).json({ success: false, message: "Missing Details !" });
     }
 
-    let existCategory = await categoryModel.findOne({ name });
+    let existCategory = await categoryModel.findOne({ name: { $regex: name, $options: "i" } });
 
     if (existCategory) {
       return res.status(409).json({ success: false, message: "Category already exist !" });
@@ -130,6 +130,62 @@ export const updateCategoryService = async (req, res) => {
 
     if (!category) {
       return res.status(404).json({ success: false, message: "Category not found !" });
+    }
+
+    let products = await productModel.find({ category: category.name })
+
+    for (let product of products) {
+
+      const calculateDiscount = (price, offer) => {
+        if (!offer) return 0;
+        if (offer) {
+          const percentage = parseFloat(offer);
+          return price * (percentage / 100);
+        }
+      };
+
+      let appliedOffer = '';
+
+      const updatedVariants = product.variants.map((v, index) => {
+        let productDiscount = calculateDiscount(v.price, product.offer);
+        let categoryDiscount = calculateDiscount(v.price, category.offer);
+
+        if (product.maxRedeem > 0 && productDiscount > product.maxRedeem) {
+          productDiscount = product.maxRedeem;
+        }
+
+        if (category?.maxRedeem > 0 && categoryDiscount > category.maxRedeem) {
+          categoryDiscount = category.maxRedeem;
+        }
+
+        const maxDiscount = Math.max(productDiscount, categoryDiscount);
+        let salePrice = v.price - maxDiscount;
+        if (index == 0) {
+          if (product.offer && productDiscount > categoryDiscount) {
+            appliedOffer = product.maxRedeem ? `${product.offer}% offer upto ${product.maxRedeem}` : `${product.offer}% offer`
+          }
+          else if (category.offer && categoryDiscount > productDiscount) {
+            appliedOffer = category?.maxRedeem ? `${category.offer}% offer upto ${category?.maxRedeem}` : `${category.offer}% offer`
+          }
+        }
+        if (salePrice < 0) salePrice = 0;
+
+        return {
+          size: v.size,
+          quantity: v.quantity,
+          price: v.price,
+          sku: v.sku,
+          salePrice: Math.round(salePrice)
+        };
+      });
+
+      let updatedProduct = await productModel.findByIdAndUpdate(product._id,
+        {
+          $set: { variants: updatedVariants, appliedOffer },
+        },
+        { new: true }
+      );
+
     }
 
     return res.status(200).json({ success: true, message: "Updated Successfully", category });

@@ -28,32 +28,36 @@ export const addProductsServic = async (req, res) => {
 
         const getDiscountAmount = (price, offerValue) => {
             if (!offerValue) return 0;
-            if (offerValue.includes("%")) {
-                const percent = parseFloat(offerValue.replace("%", "").trim());
+            if (offerValue) {
+                const percent = parseFloat(offerValue);
                 return (price * percent) / 100;
-            } else {
-                return parseFloat(offerValue.trim());
             }
         };
 
-        let maxRedeemApplied = false;
+        let appliedOffer = '';
 
-        const updatedVariants = variants.map((v) => {
+        const updatedVariants = variants.map((v, index) => {
             let productDiscount = getDiscountAmount(v.price, offer);
             let categoryDiscount = getDiscountAmount(v.price, categoryOffer);
 
             if (maxRedeem && productDiscount > maxRedeem) {
                 productDiscount = maxRedeem;
-                maxRedeemApplied = true;
             }
 
             if (categoryData?.maxRedeem && categoryDiscount > categoryData.maxRedeem) {
                 categoryDiscount = categoryData.maxRedeem;
-                maxRedeemApplied = true;
             }
 
             const maxDiscount = Math.max(productDiscount, categoryDiscount);
             let salePrice = v.price - maxDiscount;
+            if (index == 0) {
+                if (offer && productDiscount > categoryDiscount) {
+                    appliedOffer = maxRedeem ? `${offer}% offer upto ${maxRedeem}` : `${offer}% offer`
+                }
+                else if(categoryOffer && categoryDiscount > productDiscount) {
+                    appliedOffer = categoryData?.maxRedeem ? `${categoryOffer}% offer upto ${categoryData?.maxRedeem}` : `${categoryOffer}% offer`
+                }
+            }
             if (salePrice < 0) salePrice = 0;
 
             return {
@@ -63,18 +67,18 @@ export const addProductsServic = async (req, res) => {
             };
         });
 
-        let appliedOffer;
-        if (maxRedeemApplied) {
-            const highestMax = Math.max(maxRedeem || 0, categoryData.maxRedeem || 0);
-            appliedOffer = `₹${highestMax} Flat`;
-        } else {
-            const firstVariant = updatedVariants[0];
-            const productDisc = getDiscountAmount(firstVariant.price, offer);
-            const categoryDisc = getDiscountAmount(firstVariant.price, categoryOffer);
-            appliedOffer = productDisc >= categoryDisc
-                ? (!offer?.includes("%") ? `₹${offer} Flat` : offer)
-                : (!categoryOffer?.includes("%") ? `₹${categoryOffer} Flat` : categoryOffer);
-        }
+        // let appliedOffer;
+        // if (maxRedeemApplied) {
+        //     const highestMax = Math.max(maxRedeem || 0, categoryData.maxRedeem || 0);
+        //     appliedOffer = `₹${highestMax} Flat`;
+        // } else {
+        //     const firstVariant = updatedVariants[0];
+        //     const productDisc = getDiscountAmount(firstVariant.price, offer);
+        //     const categoryDisc = getDiscountAmount(firstVariant.price, categoryOffer);
+        //     appliedOffer = productDisc >= categoryDisc
+        //         ? (`${offer}% offer upto ₹${maxRedeem}`)
+        //         : (`${categoryOffer}% offer upto ₹${categoryData?.maxRedeem}`);
+        // }
 
         const product = new productModel({
             name, description, category, offer, maxRedeem, images, variants: updatedVariants,
@@ -173,6 +177,7 @@ export const singleProductService = async (req, res) => {
     }
 };
 
+
 export const updateProductService = async (req, res) => {
     try {
         const { productId } = req.params;
@@ -198,32 +203,36 @@ export const updateProductService = async (req, res) => {
 
         const calculateDiscount = (price, offer) => {
             if (!offer) return 0;
-            if (offer.includes("%")) {
-                const percentage = parseFloat(offer.replace("%", "").trim());
+            if (offer) {
+                const percentage = parseFloat(offer);
                 return price * (percentage / 100);
-            } else {
-                return parseFloat(offer.trim());
             }
         };
 
-        let maxRedeemApplied = false;
+        let appliedOffer = '';
 
-        const updatedVariants = variants.map((v) => {
+        const updatedVariants = variants.map((v, index) => {
             let productDiscount = calculateDiscount(v.price, offer);
             let categoryDiscount = calculateDiscount(v.price, categoryOffer);
 
             if (maxRedeem && productDiscount > maxRedeem) {
                 productDiscount = maxRedeem;
-                maxRedeemApplied = true;
             }
 
             if (categoryData?.maxRedeem && categoryDiscount > categoryData.maxRedeem) {
                 categoryDiscount = categoryData.maxRedeem;
-                maxRedeemApplied = true;
             }
 
             const maxDiscount = Math.max(productDiscount, categoryDiscount);
             let salePrice = v.price - maxDiscount;
+            if (index == 0) {
+                if (offer && productDiscount > categoryDiscount) {
+                    appliedOffer = maxRedeem ? `${offer}% offer upto ${maxRedeem}` : `${offer}% offer`
+                }
+                else if(categoryOffer && categoryDiscount > productDiscount) {
+                    appliedOffer = categoryData?.maxRedeem ? `${categoryOffer}% offer upto ${categoryData?.maxRedeem}` : `${categoryOffer}% offer`
+                }
+            }
             if (salePrice < 0) salePrice = 0;
 
             return {
@@ -233,25 +242,12 @@ export const updateProductService = async (req, res) => {
             };
         });
 
-        let appliedOffer;
-        if (maxRedeemApplied) {
-            const highestMax = Math.max(maxRedeem || 0, categoryData.maxRedeem || 0);
-            appliedOffer = `₹${highestMax} Flat`;
-        } else {
-            const firstVariant = updatedVariants[0];
-            const productDisc = calculateDiscount(firstVariant.price, offer);
-            const categoryDisc = calculateDiscount(firstVariant.price, categoryOffer);
-            appliedOffer = productDisc >= categoryDisc
-                ? (!offer.includes("%") ? `₹${offer} Flat` : offer)
-                : (!categoryOffer.includes("%") ? `₹${categoryOffer} Flat` : categoryOffer);
-        }
-
         const updatedProduct = await productModel.findByIdAndUpdate(
             productId,
             {
                 $set: {
-                    name, category, description, offer, maxRedeem, appliedOffer,
-                    images, brand, ingredients, serve, store, life, variants: updatedVariants, coverImage
+                    name, category, description, offer, maxRedeem, images, brand, ingredients,
+                    serve, store, life, variants: updatedVariants, coverImage, appliedOffer
                 },
             },
             { new: true }
