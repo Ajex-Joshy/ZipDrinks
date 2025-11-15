@@ -8,6 +8,7 @@ import { addProducts, getProducts, productListUnlist, singleProduct, updateProdu
 import { approveOrderItemReturn, approveOrderReturn, changeOrderStatus, getOrders, getSingleOrder } from "../../controllers/Admin/orderController.js";
 import { addCoupon, couponStatus, deleteCoupon, getCoupons, getSingleCoupon, updateCoupon } from "../../controllers/Admin/couponController.js";
 import { generateSalesExcel, generateSalesPdf, getSales } from "../../controllers/Admin/salesController.js";
+import { getAdminDashboard } from "../../controllers/Admin/dashboradController.js";
 
 const AdminRouter = express.Router()
 
@@ -40,5 +41,6 @@ AdminRouter.patch('/coupons/:couponId' , deleteCoupon)
 AdminRouter.get('/sales' , getSales)
 AdminRouter.get('/sales/download-pdf' , generateSalesPdf)
 AdminRouter.get('/sales/download-excel' , generateSalesExcel)
+AdminRouter.get('/dashboard' , getAdminDashboard)
 
 export default AdminRouter
