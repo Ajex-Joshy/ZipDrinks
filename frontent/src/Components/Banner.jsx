@@ -1,23 +1,38 @@
 import React, { useState, useEffect } from 'react';
-
-const images = [
-  'soft-drinks3.jpg',
-  'Campa1.jpeg',
-  'refresh1.webp',
-  'sprite1.jpeg',
-  'Home-cooldrinks.webp'
-];
+import { toast } from 'react-toastify';
+import axiosInstance from '../Helper/AxiosInstance';
 
 const Banner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [bannerImages , setBannerImages] = useState([])
+  
+  useEffect(()=>{
+    async function getBannerImages(){
+      try {
+
+        const { data } = await axiosInstance.get('/api/admin/banner')
+
+        if(data.success){
+          setBannerImages(data.banners.filter(b => b.isListed))
+        }
+        else{
+          toast.error(data.message)
+        }
+        
+      } catch (error) {
+        toast.error(error?.response?.data?.message)
+      }
+    }
+    getBannerImages()
+  },[])
 
   const prevSlide = () => {
     const isFirst = currentIndex === 0;
-    setCurrentIndex(isFirst ? images.length - 1 : currentIndex - 1);
+    setCurrentIndex(isFirst ? bannerImages.length - 1 : currentIndex - 1);
   };
 
   const nextSlide = () => {
-    const isLast = currentIndex === images.length - 1;
+    const isLast = currentIndex === bannerImages.length - 1;
     setCurrentIndex(isLast ? 0 : currentIndex + 1);
   };
 
@@ -33,7 +48,7 @@ const Banner = () => {
 
       <div className="overflow-hidden rounded-lg h-64 md:h-96 relative">
         <img
-          src={images[currentIndex]}
+          src={bannerImages[currentIndex]?.image}
           alt={`slide-${currentIndex}`}
           className="w-full h-full object-cover transition duration-700 ease-in-out"
         />
@@ -58,7 +73,7 @@ const Banner = () => {
       </button>
 
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {images.map((_, idx) => (
+        {bannerImages?.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrentIndex(idx)}

@@ -51,6 +51,9 @@ import AdminCouponEdit from "./pages/Admin/Coupons/AdminCouponEdit.jsx"
 import ReferralCode from "./pages/UserProfile/ReferralCode.jsx"
 import Wallet from "./pages/UserProfile/Wallet.jsx"
 import AdminSales from "./pages/Admin/AdminSales.jsx"
+import AdminBanner from "./pages/Admin/Banner/AdminBanner.jsx"
+import AdminBannerAdd from "./pages/Admin/Banner/AdminBannerAdd.jsx"
+import AdminBannerEdit from "./pages/Admin/Banner/AdminBannerEdit.jsx"
 
 function App() {
 
@@ -250,7 +253,22 @@ function App() {
               <AdminSales />
             </AdminProtectedRoute>
           } />
-
+          <Route path="/admin/banner" element={
+            <AdminProtectedRoute>
+              <AdminBanner />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/banner/add-banner" element={
+            <AdminProtectedRoute>
+              <AdminBannerAdd />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/banner/:bannerId/edit" element={
+            <AdminProtectedRoute>
+              <AdminBannerEdit />
+            </AdminProtectedRoute>
+          } />
+          
           <Route path="*" element={<NotFound />} />
 
         </Routes>

@@ -74,7 +74,6 @@ export const getAdminDashboardService = async (filter) => {
             };
         }
 
-
         // ---------- WEEKLY (last 4 weeks) ----------
         else if (filter === "weekly") {
             const last28 = new Date();
@@ -102,7 +101,8 @@ export const getAdminDashboardService = async (filter) => {
             };
 
             formatter = (item) => {
-                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                 return months[item._id.month - 1];
             };
         }
@@ -121,6 +121,7 @@ export const getAdminDashboardService = async (filter) => {
             formatter = (item) => `${item._id.year}`;
         }
 
+        // Fetch actual data from MongoDB
         let graph = await orderModel.aggregate([
             { $match: matchStage },
             {
@@ -133,11 +134,91 @@ export const getAdminDashboardService = async (filter) => {
             { $sort: { "_id": 1 } }
         ]);
 
-        graph = graph.map((item, index) => ({
-            name: formatter(item, index),
-            orders: item.totalOrders,
-            revenue: item.totalRevenue
-        }));
+        // ----------- BUILD FULL TIME SERIES -----------
+        let fullGraph = [];
+
+        // DAILY (last 7 days)
+        if (filter === "daily") {
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const today = new Date();
+
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(today.getDate() - i);
+
+                fullGraph.push({
+                    key: d.toISOString().split("T")[0],
+                    name: days[d.getDay()],
+                    orders: 0,
+                    revenue: 0
+                });
+            }
+
+            graph.forEach(item => {
+                fullGraph = fullGraph.map(day =>
+                    day.key === item._id.date
+                        ? { ...day, orders: item.totalOrders, revenue: item.totalRevenue }
+                        : day
+                );
+            });
+        }
+
+        // WEEKLY (last 4 weeks)
+        else if (filter === "weekly") {
+            fullGraph = Array.from({ length: 4 }).map((_, i) => ({
+                name: `Week ${i + 1}`,
+                orders: 0,
+                revenue: 0
+            }));
+
+            graph.forEach((item, index) => {
+                if (fullGraph[index]) {
+                    fullGraph[index].orders = item.totalOrders;
+                    fullGraph[index].revenue = item.totalRevenue;
+                }
+            });
+        }
+
+        // MONTHLY (12 months)
+        else if (filter === "monthly") {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            fullGraph = months.map((m, i) => ({
+                name: m,
+                month: i + 1,
+                orders: 0,
+                revenue: 0
+            }));
+
+            graph.forEach(item => {
+                fullGraph[item._id.month - 1].orders = item.totalOrders;
+                fullGraph[item._id.month - 1].revenue = item.totalRevenue;
+            });
+        }
+
+        // YEARLY (5 years)
+        else if (filter === "yearly") {
+            const currentYear = now.getFullYear();
+            fullGraph = Array.from({ length: 5 }).map((_, i) => ({
+                name: `${currentYear - 4 + i}`,
+                year: currentYear - 4 + i,
+                orders: 0,
+                revenue: 0
+            }));
+
+            graph.forEach(item => {
+                const idx = fullGraph.findIndex(f => f.year == item._id.year);
+                if (idx !== -1) {
+                    fullGraph[idx].orders = item.totalOrders;
+                    fullGraph[idx].revenue = item.totalRevenue;
+                }
+            });
+        }
+
+        // FINAL OUTPUT
+        graph = fullGraph;
+
 
         const dashboard = {
             overview: {
