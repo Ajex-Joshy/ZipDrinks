@@ -32,7 +32,7 @@ const VerifyEditEmail = () => {
 
         } catch (error) {
             dispatch(loginFail())
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
     }
 
@@ -43,7 +43,7 @@ const VerifyEditEmail = () => {
                 toast.success(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
     }
 

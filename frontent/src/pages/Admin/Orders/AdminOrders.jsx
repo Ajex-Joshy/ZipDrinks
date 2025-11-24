@@ -19,6 +19,7 @@ export default function AdminOrders() {
   const [totalOrders, setTotalOrders] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
+  const today = new Date().toISOString().split("T")[0]
 
   const itemsPerPage = 20;
 
@@ -106,7 +107,7 @@ export default function AdminOrders() {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response.data.message);
     } finally {
       setOpenDropdown(null);
     }
@@ -170,6 +171,7 @@ export default function AdminOrders() {
                 <input
                   type="date"
                   value={selectedDate}
+                  max={today}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 />

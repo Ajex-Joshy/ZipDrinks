@@ -1,8 +1,10 @@
 import express from "express"
-import { getUserId, userAuth } from "../../middlewares/User/userAuth.js";
+import { checkUser, getUserId, userAuth } from "../../middlewares/User/userAuth.js";
 import { changePassword, deleteAddress, editAddress, editUserData, getOneAddress, getUserAddress, getUserData, resendEditEmailOtp, userAddressAdd, verifyEditEmialOtp } from "../../controllers/User/userController.js";
 
 const userRouter = express.Router();
+
+userRouter.use(checkUser)
 
 userRouter.get('/data' , getUserId , getUserData)
 userRouter.put('/edit' , userAuth , editUserData)

@@ -16,8 +16,8 @@ export const getOrdersService = async (req, res) => {
 
     if (search) {
       query.$or = [
-        { orderId: { $regex: `^${search}`, $options: "i" } },
-        { "items.sku": { $regex: `^${search}`, $options: "i" } },
+        { orderId: { $regex: search, $options: "i" } },
+        { "items.sku": { $regex: search, $options: "i" } },
       ];
     }
 

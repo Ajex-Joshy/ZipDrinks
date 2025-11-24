@@ -62,7 +62,7 @@ const Checkout = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response.data.message);
     }
   }
 
@@ -90,7 +90,7 @@ const Checkout = () => {
         toast.error(res.data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response.data.message);
     } finally {
       setShowAddressForm(false);
       setEditAddress(null);
@@ -142,7 +142,7 @@ const Checkout = () => {
 
     setLoading(true)
     try {
-      // COD FLOW 🟢
+      // COD FLOW 
       if (paymentMethod === "COD" || paymentMethod === "Wallet") {
         const { data } = await axiosInstance.post('/api/order/place-order', orderData);
         if (data.success) {
@@ -155,7 +155,7 @@ const Checkout = () => {
         return;
       }
 
-      // RAZORPAY FLOW 💳
+      // RAZORPAY FLOW 
       if (paymentMethod === "Razorpay") {
         const { data } = await axiosInstance.post("/api/order/place-order", orderData);
 

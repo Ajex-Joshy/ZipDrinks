@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
-import { GONE, SERVER_ERROR, UNAUTHORIZED } from "../../utils/constants.js";
+import { FORBIDDENT, GONE, SERVER_ERROR, UNAUTHORIZED } from "../../utils/constants.js";
+import userModel from "../../models/userModel.js";
 
 export const userAuth = async (req, res, next) => {
 
@@ -47,7 +48,7 @@ export const verifyTempToken = async (req, res, next) => {
         next()
 
     } catch (error) {
-        return res.status(SERVER_ERROR).json({ success: false, message: error.message })
+        return res.status(UNAUTHORIZED).json({ success: false, message: error.message })
     }
 }
 
@@ -72,7 +73,38 @@ export const getUserId = async (req, res, next) => {
         next()
 
     } catch (error) {
-        return res.status(SERVER_ERROR).json({ success: false, message: error.message })
+        return res.status(UNAUTHORIZED).json({ success: false, message: error.message })
     }
 
 }
+
+
+export const checkUser = async (req, res, next) => {
+  const accessToken = req.headers?.authorization?.split(" ")[1];
+
+  if (!accessToken) {
+    return res.status(UNAUTHORIZED).json({ success: false, message: "Not Authorized" });
+  }
+
+  try {
+    const tokenDecode = jwt.verify(accessToken, process.env.JWT_SECRET);
+
+    if (!tokenDecode.id) {
+      return res.status(UNAUTHORIZED).json({ success: false, message: "Not Authorized" });
+    }
+    const user = await userModel.findById(tokenDecode.id)
+
+    if (!user) {
+      return res.status(UNAUTHORIZED).json({ success: false, message: "User Not Found" });
+    }
+
+    if (user.isBlocked) {
+      return res.status(FORBIDDENT).json({ success: false, message: "User is blocked" });
+    }
+
+    next();
+
+  } catch (error) {
+    return res.status(UNAUTHORIZED).json({ success: false, message: error.message });
+  }
+};

@@ -78,7 +78,7 @@ const CategoryForm = ({ categoryEditSubmit, category }) => {
 
         try {
 
-            let res = await axiosInstance.post('/api/admin/add-category', data)
+            let res = await axiosInstance.post('/api/admin/categories/add-category', data)
 
             if (res.data.success) {
                 toast.success(res.data.message)

@@ -27,114 +27,6 @@ export const getSales = async (req, res) => {
 
 // sales pdf
 
-// export const generateSalesPdf = async (req, res) => {
-//     try {
-//         const { filter, startDate, endDate } = req.query;
-
-//         const data = await getSalesService(filter, startDate, endDate);
-
-//         if (!data || !data.allOrders || data.allOrders.length === 0) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "No orders found for the selected filter.",
-//             });
-//         }
-
-//         const { allOrders, sales } = data;
-
-//         // Create a PDF document
-//         const doc = new PDFDocument({ margin: 40, size: "A4" });
-
-//         //  Setup response headers for file download
-//         const fileName = `Sales_Report_${filter}_${new Date()
-//             .toISOString()
-//             .slice(0, 10)}.pdf`;
-//         res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
-//         res.setHeader("Content-Type", "application/pdf");
-
-//         // Pipe PDF to response
-//         doc.pipe(res);
-
-//         //  Header / Title
-//         doc.fontSize(20).text("Sales Report", { align: "center" });
-//         doc.moveDown();
-//         doc.fontSize(12).text(`Filter: ${filter.toUpperCase()}`);
-//         if (filter === "custom" && startDate && endDate) {
-//             doc.text(`Date Range: ${startDate} → ${endDate}`);
-//         }
-//         doc.text(`Generated On: ${new Date().toLocaleString()}`);
-//         doc.moveDown(1);
-
-//         //  Summary Section
-//         doc.fontSize(12).text("Summary", { underline: true });
-//         doc.moveDown(0.5);
-//         doc.text(`Total Orders: ${sales?.totalOrders || 0}`);
-//         doc.text(`Total Revenue: Rs ${sales?.totalRevenue || 0}`);
-//         doc.text(`Total Discount: Rs ${sales?.totalDiscount || 0}`);
-//         doc.text(`Total Pendings: ${sales?.totalPendings || 0}`);
-//         doc.moveDown(1.5);
-
-//         //  Table Header
-//         const startX = 40;
-//         let y = doc.y;
-//         const tableWidth = 500;
-//         const columnWidths = [25, 80, 80, 60, 60, 60, 60];
-
-//         doc.fontSize(10).font("Helvetica-Bold");
-//         const headers = [
-//             "#",
-//             "Order ID",
-//             "Buyer",
-//             "Products",
-//             "Date",
-//             "Coupon",
-//             "Net (₹)",
-//         ];
-
-//         headers.forEach((header, i) => {
-//             doc.text(header, startX + i * 70, y, { width: columnWidths[i] });
-//         });
-//         y += 20;
-//         doc.moveTo(startX, y - 5).lineTo(startX + tableWidth, y - 5).stroke();
-
-//         //  Table Rows
-//         doc.font("Helvetica").fontSize(9);
-//         allOrders.forEach((order, index) => {
-//             if (y > 750) {
-//                 doc.addPage();
-//                 y = 50;
-//             }
-
-//             const orderValues = [
-//                 index + 1,
-//                 order.orderId || "-",
-//                 order.address?.fullname || "-",
-//                 order.items?.length || 0,
-//                 new Date(order.orderDate).toLocaleDateString(),
-//                 order.couponId?.couponCode || "-",
-//                 "Rs " + order.totalAmount.toFixed(2),
-//             ];
-
-//             orderValues.forEach((value, i) => {
-//                 doc.text(value.toString(), startX + i * 70, y, {
-//                     width: columnWidths[i],
-//                 });
-//             });
-
-//             y += 18;
-//         });
-
-//         doc.end();
-//     } catch (error) {
-//         return res.status(500).json({
-//             success: false,
-//             message: "Failed to generate PDF",
-//         });
-//     }
-// }
-
-
-
 export const generateSalesPdf = async (req, res) => {
   try {
     const { filter, startDate, endDate } = req.query;
@@ -157,9 +49,9 @@ export const generateSalesPdf = async (req, res) => {
 
     doc.pipe(res);
 
-    // -------------------------------
+
     // HEADER SECTION (Branding)
-    // -------------------------------
+
     doc
       .fontSize(24)
       .font("Helvetica-Bold")
@@ -180,9 +72,8 @@ export const generateSalesPdf = async (req, res) => {
 
     doc.moveDown(1.5);
 
-    // -------------------------------
     // SUMMARY SECTION (Clean Box)
-    // -------------------------------
+
     doc.rect(40, doc.y, 515, 90).stroke("#D1D1D1");
 
     let summaryY = doc.y + 10;
@@ -202,9 +93,8 @@ export const generateSalesPdf = async (req, res) => {
 
     doc.moveDown(4);
 
-    // -------------------------------
     // TABLE HEADER
-    // -------------------------------
+
     const tableX = 40;
     let tableY = doc.y;
 
@@ -225,9 +115,8 @@ export const generateSalesPdf = async (req, res) => {
 
     tableY += 32;
 
-    // -------------------------------
     // TABLE ROWS
-    // -------------------------------
+
     doc.font("Helvetica").fontSize(9);
 
     allOrders.forEach((order, index) => {
@@ -265,9 +154,8 @@ export const generateSalesPdf = async (req, res) => {
       tableY += 20;
     });
 
-    // -------------------------------
-    // FOOTER (Page Numbers)
-    // -------------------------------
+    // FOOTER 
+
     const range = doc.bufferedPageRange();
     for (let i = 0; i < range.count; i++) {
       doc.switchToPage(i);

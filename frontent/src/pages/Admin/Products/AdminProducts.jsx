@@ -63,7 +63,7 @@ export default function AdminProducts() {
           toast.error(data.message || 'Failed to load data');
         }
       } catch (error) {
-        toast.error(error.message);
+        toast.error(error.response.data.message);
       } finally {
         setLoading(false);
       }
@@ -87,7 +87,7 @@ export default function AdminProducts() {
       }
 
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error?.response?.data?.message)
     }
   };
 

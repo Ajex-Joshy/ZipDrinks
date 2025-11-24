@@ -33,7 +33,7 @@ const AdminMain = ({ children }) => {
       if (result.isConfirmed) {
         try {
 
-          let { data } = await axiosInstance.post(backendUrl + '/api/admin/logout');
+          let { data } = await axiosInstance.post(backendUrl + '/api/admin/auth/logout');
 
           if (data.success) {
             dispatch(adminOut())
@@ -43,7 +43,7 @@ const AdminMain = ({ children }) => {
             toast.error(data.message)
           }
         } catch (error) {
-          toast.error(error.message)
+          toast.error(error?.response?.data?.message)
         }
       }
     });

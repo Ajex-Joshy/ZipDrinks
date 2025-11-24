@@ -23,7 +23,7 @@ const AdminEditProduct = () => {
                     toast.error(data.message)
                 }                
             } catch (error) {
-                toast.error(error.message)
+                toast.error(error.response.data.message)
             }
         }
         getProduct()
@@ -42,7 +42,7 @@ const AdminEditProduct = () => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
     }
 

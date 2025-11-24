@@ -29,6 +29,10 @@ const ProductDetail = () => {
     const inWishlist = wishlist?.items?.some(item => item.productId?._id.toString() == id)
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [id]);
+
+    useEffect(() => {
         dispatch(productFetch())
     }, [])
 
@@ -57,7 +61,7 @@ const ProductDetail = () => {
                     toast.error(data.message)
                 }
             } catch (error) {
-                toast.error(error.message)
+                toast.error(error.response.data.message)
             }
             finally {
                 // setLoading(false)
@@ -115,7 +119,7 @@ const ProductDetail = () => {
                 toast.error(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
     }
 
@@ -193,9 +197,9 @@ const ProductDetail = () => {
                                             ₹{selectedVariant.price || selectedVariant.price}
                                         </span>
                                     ) : ""}
-                                        <span className={selectedVariant.quantity <= 0 ?`text-red-600 text-sm` : selectedVariant.quantity <= 10 ? `text-orange-600 text-sm` : `text-green-600 text-sm` }>
-                                            {selectedVariant?.quantity <= 0 ? "Stock out" : `Stock left : ${selectedVariant.quantity}`}
-                                        </span>
+                                    <span className={selectedVariant.quantity <= 0 ? `text-red-600 text-sm` : selectedVariant.quantity <= 10 ? `text-orange-600 text-sm` : `text-green-600 text-sm`}>
+                                        {selectedVariant?.quantity <= 0 ? "Stock out" : `Stock left : ${selectedVariant.quantity}`}
+                                    </span>
                                 </div>
                             </div>
                         )}
@@ -315,7 +319,7 @@ const ProductDetail = () => {
                         <p className="text-gray-600 text-center mb-8">Check out our recommended Drinks</p>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
-                            {products?.filter((prd) => prd?.category == product?.category).slice(0, 4)?.map((product) => (
+                            {products?.filter((prd) => prd?.category == product?.category && prd?._id !== product?._id).slice(0, 4)?.map((product) => (
                                 <Card
                                     key={product._id}
                                     id={product._id}

@@ -27,7 +27,7 @@ const CartCard = ({ cartItems }) => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.response?.data?.message)
         }
     }
 
@@ -45,7 +45,7 @@ const CartCard = ({ cartItems }) => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.response?.data?.message)
         }
     }
 
@@ -63,7 +63,7 @@ const CartCard = ({ cartItems }) => {
             }
             
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.response?.data?.message)
         }
     }
 

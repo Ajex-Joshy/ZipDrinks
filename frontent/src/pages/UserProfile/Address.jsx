@@ -20,7 +20,7 @@ export default function Address() {
                 }
 
             } catch (error) {
-                toast.error(error.message)
+                toast.error(error.response.data.message)
             }
         }
         getUserAddress()
@@ -51,7 +51,7 @@ export default function Address() {
                     }
 
                 } catch (error) {
-                    toast.error(error.message)
+                    toast.error(error.response.data.message)
                 }
             }
         });

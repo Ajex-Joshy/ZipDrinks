@@ -128,7 +128,7 @@ const ProductForm = ({ productEditSubmit, product }) => {
 
             setImgLoad({ ...imgLoad, [currentIndex]: false });
         } catch (err) {
-            toast.error('Image upload failed', err.message);
+            toast.error('Image upload failed', err?.response?.data?.message);
             setImgLoad({ ...imgLoad, [currentIndex]: false });
         }
     };

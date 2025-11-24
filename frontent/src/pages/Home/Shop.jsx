@@ -80,7 +80,7 @@ const Shop = () => {
                     toast.error(data.message);
                 }
             } catch (error) {
-                console.log(error.message);
+                console.log(error.response.data.message);
             }
         }
         getCategories();
@@ -98,7 +98,7 @@ const Shop = () => {
                 toast.error(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
     }
 
@@ -114,7 +114,7 @@ const Shop = () => {
                 toast.error(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
     }
 

@@ -1,8 +1,10 @@
 import express from "express"
-import { getUserId, userAuth } from "../middlewares/User/userAuth.js"
+import { checkUser, getUserId, userAuth } from "../middlewares/User/userAuth.js"
 import { cancelOrder, cancelOrderitem, downloadOrderInvoice, getSingleOrder, getUserOrder, placeOrder, returnOrder, returnOrderItem, verifyPayment } from "../controllers/User/orderController.js"
 
 const orderRouter = express.Router()
+
+orderRouter.use(checkUser)
 
 orderRouter.post('/place-order' , userAuth , placeOrder)
 orderRouter.get('/' , getUserId , getUserOrder)

@@ -21,7 +21,7 @@ const AdminLogin = () => {
     dispatch(loadStart())
     try {
 
-      let res = await axiosInstance.post('/api/admin/login', { email: data.email, password: data.password })
+      let res = await axiosInstance.post('/api/admin/auth/login', { email: data.email, password: data.password })
 
       if (res.data.success) {
         console.log(res.data)

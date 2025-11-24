@@ -34,7 +34,7 @@ export const getCategoriesService = async (req, res) => {
     const query = {};
 
     if (search) {
-      query.name = { $regex: `^${search}`, $options: "i" };
+      query.name = { $regex: search, $options: "i" };
     }
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -123,6 +123,13 @@ export const updateCategoryService = async (req, res) => {
   }
 
   try {
+
+    let existCategory = await categoryModel.findOne({ name: { $regex: name, $options: "i" } });
+
+    if(existCategory){
+      return res.status(CONFLICT).json({ success: false, message: "Category already exist !" });
+    }
+
     let category = await categoryModel.findByIdAndUpdate(
       categoryId,
       { $set: { name, description, offer, maxRedeem, image } },

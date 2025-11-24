@@ -11,7 +11,7 @@ const EmailVerify = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const email = location.state.email
+    const email = location?.state?.email
     const dispatch = useDispatch()
 
     // useEffect(() => {

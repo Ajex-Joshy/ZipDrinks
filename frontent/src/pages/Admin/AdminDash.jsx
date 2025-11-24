@@ -56,7 +56,7 @@ const AdminDash = () => {
   };
 
   const statsCards = [
-    { title: 'Total Revenue', value: dashboardData?.overview?.totalRevenue || 0, icon: DollarSign, color: 'bg-blue-500' },
+    { title: 'Total Revenue', value: dashboardData?.overview?.totalRevenue?.toFixed(2) || 0, icon: DollarSign, color: 'bg-blue-500' },
     { title: 'Total Orders', value: dashboardData?.overview?.totalOrders || 0, icon: ShoppingCart, color: 'bg-green-500' },
     { title: 'Total Products', value: dashboardData?.overview?.totalProducts || 0, icon: Package, color: 'bg-purple-500' },
     { title: 'Total Users', value: dashboardData?.overview?.totalUsers || 0, icon: Users, color: 'bg-orange-500' }
@@ -129,7 +129,7 @@ const AdminDash = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-gray-600 text-sm">{stat.title}</p>
-                    <h3 className="text-2xl font-bold text-gray-800 mt-1">{stat.value}</h3>
+                    <h5 className="text-xl font-bold text-gray-800 mt-1">{stat.value}</h5>
                   </div>
                   <div className={`${stat.color} p-3 rounded-lg`}>
                     <stat.icon className="text-white" size={24} />

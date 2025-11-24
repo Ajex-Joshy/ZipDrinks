@@ -6,51 +6,98 @@ import userModel from "../../models/userModel.js"
 export const getAdminDashboardService = async (filter) => {
     try {
 
-        let orders = await orderModel.aggregate([{ $group: { _id: null, totalOrders: { $sum: 1 }, totalRevenue: { $sum: "$totalAmount" } } },
-        { $project: { totalOrders: 1, totalRevenue: 1, _id: 0 } }
+        let match = {}
+        const now = new Date();
+
+        if (filter == "daily") {
+            const last7 = new Date();
+            last7.setDate(now.getDate());
+            last7.setHours(0, 0, 0, 0);
+
+            const end = new Date();
+            end.setHours(23, 59, 59, 999);
+
+            match = { createdAt: { $gte: last7, $lte: end } };
+        }
+        else if (filter == "weekly") {
+            const last7 = new Date();
+            last7.setDate(now.getDate() - 7);
+
+            match = { createdAt: { $gte: last7, $lte: now } };
+        }
+        else if (filter == "montly") {
+            const lastMonth = new Date();
+            lastMonth.setFullYear(now.getMonth() - 1);
+
+            match = { createdAt: { $gte: lastMonth, $lte: now } };
+        }
+        else if(filter == "yearly") {
+            const last5 = new Date();
+            last5.setFullYear(now.getFullYear() - 5);
+
+            match = { createdAt: { $gte: last5, $lte: now } };
+        }
+
+        let orders = await orderModel.aggregate([
+            { $match : match },
+            { $group: { _id: null, totalOrders: { $sum: 1 }, totalRevenue: { $sum: "$totalAmount" } } },
+            { $project: { totalOrders: 1, totalRevenue: 1, _id: 0 } }
         ])
 
-        let products = await productModel.aggregate([{ $group: { _id: null, totalProducts: { $sum: 1 } } }, { $project: { totalProducts: 1, _id: 0 } }])
-
-        let users = await userModel.aggregate([{ $group: { _id: null, totalUsers: { $sum: 1 } } }, { $project: { totalUsers: 1, _id: 0 } }])
-
-        let topProducts = await orderModel.aggregate([{ $unwind: "$items" },
-        { $group: { _id: "$items.productId", totalSale: { $sum: "$items.quantity" }, totalRevenue: { $sum: "$items.subTotal" } } },
-        { $lookup: { from: "products", localField: "_id", foreignField: "_id", as: "product" } },
-        { $unwind: "$product" },
-        { $sort: { totalSale: -1 } },
-        { $limit: 10 }
+        let products = await productModel.aggregate([
+            { $match : match },
+            { $group: { _id: null, totalProducts: { $sum: 1 } } },
+            { $project: { totalProducts: 1, _id: 0 } }
         ])
 
-        let topCustomers = await orderModel.aggregate([{ $group: { _id: "$userId", totalOrders: { $sum: 1 }, totalSpend: { $sum: "$totalAmount" } } },
-        { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "user" } },
-        { $unwind: "$user" },
-        { $sort: { totalOrders: -1 } },
-        { $limit: 10 }
+        let users = await userModel.aggregate([
+            { $match : match },
+            { $group: { _id: null, totalUsers: { $sum: 1 } } },
+            { $project: { totalUsers: 1, _id: 0 } }
         ])
 
-        let topCategories = await orderModel.aggregate([{ $unwind: "$items" },
-        { $group: { _id: "$items.category", totalSale: { $sum: "$items.quantity" }, totalRevenue: { $sum: "$items.subTotal" } } },
-        { $sort: { totalSale: -1 } },
-        { $limit: 10 }
+        let topProducts = await orderModel.aggregate([
+            { $match : match },
+            { $unwind: "$items" },
+            { $group: { _id: "$items.productId", totalSale: { $sum: "$items.quantity" }, totalRevenue: { $sum: "$items.subTotal" } } },
+            { $lookup: { from: "products", localField: "_id", foreignField: "_id", as: "product" } },
+            { $unwind: "$product" },
+            { $sort: { totalSale: -1 } },
+            { $limit: 10 }
+        ])
+
+        let topCustomers = await orderModel.aggregate([
+            { $match : match },
+            { $group: { _id: "$userId", totalOrders: { $sum: 1 }, totalSpend: { $sum: "$totalAmount" } } },
+            { $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "user" } },
+            { $unwind: "$user" },
+            { $sort: { totalOrders: -1 } },
+            { $limit: 10 }
+        ])
+
+        let topCategories = await orderModel.aggregate([
+            { $match : match },
+            { $unwind: "$items" },
+            { $group: { _id: "$items.category", totalSale: { $sum: "$items.quantity" }, totalRevenue: { $sum: "$items.subTotal" } } },
+            { $sort: { totalSale: -1 } },
+            { $limit: 10 }
         ])
 
 
-        let topBrands = await orderModel.aggregate([{ $unwind: "$items" },
-        { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "product" } },
-        { $unwind: "$product" },
-        { $group: { _id: "$product.brand", totalSale: { $sum: "$items.quantity" }, totalRevenue: { $sum: "$items.subTotal" } } },
-        { $sort: { totalSale: -1 } },
-        { $limit: 10 }
+        let topBrands = await orderModel.aggregate([
+            { $match : match },
+            { $unwind: "$items" },
+            { $lookup: { from: "products", localField: "items.productId", foreignField: "_id", as: "product" } },
+            { $unwind: "$product" },
+            { $group: { _id: "$product.brand", totalSale: { $sum: "$items.quantity" }, totalRevenue: { $sum: "$items.subTotal" } } },
+            { $sort: { totalSale: -1 } },
+            { $limit: 10 }
         ])
 
         let matchStage = {};
         let groupStage = {};
         let formatter = null;
 
-        const now = new Date();
-
-        // ---------- DAILY (last 7 days) ----------
         if (filter === "daily") {
             const last7 = new Date();
             last7.setDate(now.getDate() - 6);
@@ -73,8 +120,6 @@ export const getAdminDashboardService = async (filter) => {
                 return days[item._id.day - 1];
             };
         }
-
-        // ---------- WEEKLY (last 4 weeks) ----------
         else if (filter === "weekly") {
             const last28 = new Date();
             last28.setDate(now.getDate() - 28);
@@ -86,8 +131,6 @@ export const getAdminDashboardService = async (filter) => {
 
             formatter = (item, index) => `Week ${index + 1}`;
         }
-
-        // ---------- MONTHLY (last 12 months) ----------
         else if (filter === "monthly") {
             const lastYear = new Date();
             lastYear.setFullYear(now.getFullYear() - 1);
@@ -106,8 +149,6 @@ export const getAdminDashboardService = async (filter) => {
                 return months[item._id.month - 1];
             };
         }
-
-        // ---------- YEARLY (last 5 years) ----------
         else if (filter === "yearly") {
             const last5 = new Date();
             last5.setFullYear(now.getFullYear() - 5);
@@ -121,7 +162,6 @@ export const getAdminDashboardService = async (filter) => {
             formatter = (item) => `${item._id.year}`;
         }
 
-        // Fetch actual data from MongoDB
         let graph = await orderModel.aggregate([
             { $match: matchStage },
             {
@@ -134,10 +174,9 @@ export const getAdminDashboardService = async (filter) => {
             { $sort: { "_id": 1 } }
         ]);
 
-        // ----------- BUILD FULL TIME SERIES -----------
+
         let fullGraph = [];
 
-        // DAILY (last 7 days)
         if (filter === "daily") {
             const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
             const today = new Date();
@@ -162,8 +201,6 @@ export const getAdminDashboardService = async (filter) => {
                 );
             });
         }
-
-        // WEEKLY (last 4 weeks)
         else if (filter === "weekly") {
             fullGraph = Array.from({ length: 4 }).map((_, i) => ({
                 name: `Week ${i + 1}`,
@@ -178,8 +215,6 @@ export const getAdminDashboardService = async (filter) => {
                 }
             });
         }
-
-        // MONTHLY (12 months)
         else if (filter === "monthly") {
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -196,8 +231,6 @@ export const getAdminDashboardService = async (filter) => {
                 fullGraph[item._id.month - 1].revenue = item.totalRevenue;
             });
         }
-
-        // YEARLY (5 years)
         else if (filter === "yearly") {
             const currentYear = now.getFullYear();
             fullGraph = Array.from({ length: 5 }).map((_, i) => ({
@@ -216,7 +249,6 @@ export const getAdminDashboardService = async (filter) => {
             });
         }
 
-        // FINAL OUTPUT
         graph = fullGraph;
 
 
@@ -238,6 +270,7 @@ export const getAdminDashboardService = async (filter) => {
         return dashboard
 
     } catch (error) {
+        console.log(error)
         return false
     }
 }

@@ -35,7 +35,7 @@ const NewPassword = ({setNewPassword , setEmail}) => {
       }
 
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error?.response?.data?.message)
     }
     finally {
       dispatch(loadingEnd())

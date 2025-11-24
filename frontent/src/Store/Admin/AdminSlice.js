@@ -12,7 +12,7 @@ const initialState = {
 
 export const fetchAdminData = createAsyncThunk('admin/fetchAdminData', async (_, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get('/api/admin/data');
+            const response = await axiosInstance.get('/api/admin/data' , { withCredentials : true });
             if (response.data.success && response.data.userData.isAdmin) {
                 localStorage.setItem("adminData", JSON.stringify(response.data.userData));
                 return response.data.userData;

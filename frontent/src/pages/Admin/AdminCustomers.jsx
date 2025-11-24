@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { useSearchParams } from 'react-router-dom';
 import { Loader } from 'react-feather';
 import Pagination from '../../Components/pagination';
+import Swal from "sweetalert2"
 
 const AdminCustomers = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,7 +51,7 @@ const AdminCustomers = () => {
           toast.error('Failed to load customers');
         }
       } catch (error) {
-        toast.error(error.message);
+        toast.error(error.response.data.message);
       } finally {
         setLoading(false);
       }
@@ -61,20 +62,28 @@ const AdminCustomers = () => {
 
 
   const handleToggleStatus = async (customerId) => {
-    try {
-      const { data } = await axiosInstance.patch(`/api/admin/customers/${customerId}/status`);
-      if (data.success) {
-        toast.success(data.message);
-        setCustomers((prev) =>
-          prev.map((cust) =>
-            cust._id === customerId ? { ...cust, isBlocked: !cust.isBlocked } : cust
-          )
-        );
-      } else {
-        toast.error(data.message);
+
+    let res = await Swal.fire({
+      title: "Are you sure ?",
+      showCancelButton: true
+    })
+
+    if (res.isConfirmed) {
+      try {
+        const { data } = await axiosInstance.patch(`/api/admin/customers/${customerId}/status`);
+        if (data.success) {
+          toast.success(data.message);
+          setCustomers((prev) =>
+            prev.map((cust) =>
+              cust._id === customerId ? { ...cust, isBlocked: !cust.isBlocked } : cust
+            )
+          );
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error?.response?.data?.message);
       }
-    } catch (error) {
-      toast.error(error.message);
     }
   };
 
@@ -106,7 +115,7 @@ const AdminCustomers = () => {
             />
             {searchTerm && (
               <button
-                onClick={()=>{
+                onClick={() => {
                   setSearchTerm('')
                 }}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
@@ -155,10 +164,10 @@ const AdminCustomers = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {customers.map((customer , index) => (
+                    {customers.map((customer, index) => (
                       <tr key={customer._id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 text-sm text-gray-600">
-                          {index+1}
+                          {index + 1}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -175,8 +184,8 @@ const AdminCustomers = () => {
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${customer.isBlocked
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-green-100 text-green-800'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-green-100 text-green-800'
                               }`}
                           >
                             {customer.isBlocked ? 'Blocked' : 'Active'}

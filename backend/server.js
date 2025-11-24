@@ -17,6 +17,16 @@ import couponRouter from "./routes/couponRoutes.js"
 import walletRouter from "./routes/User/wallerRoutes.js"
 import bannerRouter from "./routes/User/bannerRoutes.js"
 import { requestResponseLogger } from "./middlewares/requestResponseLogger.js"
+import AdminAuthRouter from "./routes/Admin/adminAuthRoutes.js"
+import AdminDataRouter from "./routes/Admin/AdminDataRoutes.js"
+import AdminCustomerRouter from "./routes/Admin/AdminCustomerRoutes.js"
+import AdminCategoriesRouter from "./routes/Admin/AdminCategoriesRoutes.js"
+import AdminProductsRouter from "./routes/Admin/AdminProductsRoutes.js"
+import AdminOrderRouter from "./routes/Admin/AdminOrderRoutes.js"
+import AdminCouponRouter from "./routes/Admin/AdminCouponsRoutes.js"
+import AdminSalesRouter from "./routes/Admin/AdminSalesRoutes.js"
+import AdminDashboardRouter from "./routes/Admin/AdminDashboardRoutes.js"
+import AdminBannerRouter from "./routes/Admin/AdminBannerRoutes.js"
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -30,7 +40,7 @@ app.use(cors({
 }))
 
 app.use(passport.initialize());
-app.use(requestResponseLogger)
+// app.use(requestResponseLogger)
 
 connectDb()
 
@@ -39,9 +49,10 @@ app.get("/" , (req , res)=>{
     res.send("Hello")
 })
 
+// user
+
 app.use('/api/auth' , authRouter)
 app.use('/api/user' , userRouter)
-app.use('/api/admin' , AdminRouter)
 app.use('/api/products' , productRouter)
 app.use('/api/categories' , categoryRouter)
 app.use('/api/wishlist' , wishlistRouter)
@@ -51,11 +62,25 @@ app.use('/api/coupons' , couponRouter)
 app.use('/api/wallet' , walletRouter)
 app.use('/api/banner' , bannerRouter)
 
+
+// admin
+
+app.use('/api/admin/auth' , AdminAuthRouter)
+app.use('/api/admin/data' , AdminDataRouter)
+app.use('/api/admin/customers' , AdminCustomerRouter)
+app.use('/api/admin/categories' , AdminCategoriesRouter)
+app.use('/api/admin/products' , AdminProductsRouter)
+app.use('/api/admin/orders' , AdminOrderRouter)
+app.use('/api/admin/coupons' , AdminCouponRouter)
+app.use('/api/admin/sales' , AdminSalesRouter)
+app.use('/api/admin/dashboard' , AdminDashboardRouter)
+app.use('/api/admin/banner' , AdminBannerRouter)
+
 app.use((err, req, res, next) => {
   logger.error(err.stack);
   res.status(500).json({ success: false, message: 'Server Error' });
 });
 
 app.listen(port , ()=>{
-    logger.info(`Server running on port http://localhost:${port}`)
+    console.log(`Server running on port http://localhost:${port}`)
 })

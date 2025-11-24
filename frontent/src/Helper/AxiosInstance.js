@@ -39,6 +39,13 @@ axiosInstance.interceptors.response.use(
     console.log(error)
     const originalRequest = error.config
 
+
+    if (error.response?.status === 403) {
+      store.dispatch(logout());
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {}, { withCredentials: true });
+      return Promise.reject(error);
+    }
+
     if (error.response?.status == 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -62,12 +69,13 @@ axiosInstance.interceptors.response.use(
 
       } catch (error) {
         console.log(error?.response?.data?.message)
+        console.log("blocked worked , when admin block")
         store.dispatch(logout())
         await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`, {}, { withCredentials: true });
         return Promise.reject(error)
 
       }
-      finally{
+      finally {
         store.dispatch(loadingEnd())
       }
     }

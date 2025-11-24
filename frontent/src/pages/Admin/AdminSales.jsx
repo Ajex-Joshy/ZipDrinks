@@ -18,6 +18,8 @@ const AdminSales = () => {
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
 
+  const today = new Date().toISOString().split("T")[0]
+
   useEffect(() => {
     setQuery({
       filter: filterType,
@@ -143,7 +145,7 @@ const AdminSales = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Total Orders</p>
-                  <p className="text-2xl font-bold text-gray-900">{salesData?.totalOrders}</p>
+                  <p className="text-xl font-bold text-gray-900">{salesData?.totalOrders}</p>
                 </div>
                 <div className="bg-green-100 p-3 rounded-full">
                   <ShoppingCart className="text-green-600" size={24} />
@@ -155,7 +157,7 @@ const AdminSales = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{salesData?.totalRevenue}</p>
+                  <p className="text-xl font-bold text-gray-900">₹{salesData?.totalRevenue?.toFixed(2)}</p>
                 </div>
                 <div className="bg-blue-100 p-3 rounded-full">
                   <TrendingUp className="text-blue-600" size={24} />
@@ -167,7 +169,7 @@ const AdminSales = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Total Discount</p>
-                  <p className="text-2xl font-bold text-gray-900">₹{salesData?.totalDiscount}</p>
+                  <p className="text-xl font-bold text-gray-900">₹{salesData?.totalDiscount?.toFixed(2)}</p>
                 </div>
                 <div className="bg-red-100 p-3 rounded-full">
                   <Tag className="text-purple-600" size={24} />
@@ -179,7 +181,7 @@ const AdminSales = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Total Pendings</p>
-                  <p className="text-2xl font-bold text-gray-900">{salesData?.totalPendings}</p>
+                  <p className="text-xl font-bold text-gray-900">{salesData?.totalPendings}</p>
                 </div>
                 <div className="bg-purple-100 p-3 rounded-full">
                   <TimerIcon className="text-red-600" size={24} />
@@ -239,7 +241,6 @@ const AdminSales = () => {
               </div>
             </div>
 
-
             {/* Custom Date Range */}
             {filterType === 'custom' && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg">
@@ -249,6 +250,7 @@ const AdminSales = () => {
                   </label>
                   <input
                     type="date"
+                    max={today}
                     value={customStartDate}
                     onChange={(e) => setCustomStartDate(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -260,6 +262,7 @@ const AdminSales = () => {
                   </label>
                   <input
                     type="date"
+                    max={today}
                     value={customEndDate}
                     onChange={(e) => setCustomEndDate(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -327,7 +330,7 @@ const AdminSales = () => {
                         ₹{order?.totalAmount + (order?.couponAmount ? order.couponAmount : 0)}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-red-600">
-                        {order?.couponAmount}
+                        {order?.couponAmount?.toFixed(2)}
                       </td>
                       <td className="px-4 py-3 text-sm">
                         {order.couponId ? (
@@ -339,7 +342,7 @@ const AdminSales = () => {
                         )}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">
-                        ₹{order.totalAmount}
+                        ₹{order.totalAmount?.toFixed(2)}
                       </td>
                     </tr>
                   ))}

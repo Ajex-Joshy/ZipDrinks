@@ -1,6 +1,7 @@
 import { getMainBannerService } from "../../Services/User/bannerService.js"
 import { NOT_FOUND, SERVER_ERROR, SUCCESS } from "../../utils/constants.js"
 
+// get Banners
 
 export const getMainBanner = async(req , res)=>{
     try {

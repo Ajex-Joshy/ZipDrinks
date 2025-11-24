@@ -27,7 +27,7 @@ const OrderDetail = () => {
                 }
 
             } catch (error) {
-                toast.error(error.message)
+                toast.error(error.response.data.message)
             }
         }
         getOrder()
@@ -124,7 +124,7 @@ const OrderDetail = () => {
             link.remove();
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            toast.error("Failed to download invoice", error.message);
+            toast.error("Failed to download invoice", error.response.data.message);
         }
     };
 

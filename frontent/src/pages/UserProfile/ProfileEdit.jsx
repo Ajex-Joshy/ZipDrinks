@@ -56,7 +56,7 @@ const ProfileEdit = () => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
         }
         finally {
             reset()

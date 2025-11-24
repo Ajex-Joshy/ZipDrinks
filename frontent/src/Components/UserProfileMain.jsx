@@ -33,7 +33,7 @@ export default function UserProfileMain({ children }) {
             navigate('/');
           }
         } catch (error) {
-          toast.error('Something went wrong during logout.', error.message);
+          toast.error('Something went wrong during logout.', error?.response?.data?.message);
         }
       }
     });

@@ -43,8 +43,8 @@ export const placeOrderService = async (req, res) => {
             return res.status(BAD_REQUEST).json({ success: false, message: "Something wrong ! Missing fields !" })
         }
 
-        if(totalAmount > MAX_COD_AMOUNT && paymentMethod == "COD"){
-            return res.status(BAD_REQUEST).json({success : false , message : "COD is not available for orders above 1000 !"})
+        if (totalAmount > MAX_COD_AMOUNT && paymentMethod == "COD") {
+            return res.status(BAD_REQUEST).json({ success: false, message: "COD is not available for orders above 1000 !" })
         }
 
         for (let product of products) {
@@ -65,7 +65,6 @@ export const placeOrderService = async (req, res) => {
 
         const orderId = `ORD-${new Date().getFullYear()}${(new Date().getMonth() + 1)
             .toString().padStart(2, "0")}${new Date().getDate().toString().padStart(2, "0")}-${Date.now()}`;
-
 
         if (paymentMethod == "Razorpay") {
             const razorpayOrder = await razorpay.orders.create({
@@ -350,38 +349,37 @@ export const cancelOrderitemService = async (req, res) => {
             order.totalAmount = order.subTotal + order.taxAmount + order.deliveryFee
         }
 
+        let refundAmount = 0;
+
+        if (order.couponId && order.couponAmount > 0) {
+            const coupon = await couponModel.findById(order.couponId);
+
+            if (coupon) {
+                if (order.subTotal < coupon.minPurchase) {
+                    refundAmount -= order.couponAmount;
+                    order.couponId = null;
+                    order.couponAmount = 0;
+                } else {
+
+                    const activeCount = order.items.filter(i => i.status !== "cancelled").length;
+                    const couponShare = order.couponAmount / (activeCount + 1);
+
+                    refundAmount -= couponShare;
+                    order.couponAmount -= couponShare
+                }
+            }
+        }
+
+        order.totalAmount = order.subTotal + order.taxAmount + order.deliveryFee - order.couponAmount
+
         if (order.paymentMethod != "COD") {
 
-            let refundAmount;
             if (allCancelled) {
                 refundAmount = orderFullAmount
             }
             else {
-                refundAmount = item.subTotal + (item.subTotal * TAX_PERCENT)
+                refundAmount += item.subTotal + (item.subTotal * TAX_PERCENT)
 
-                if (order.couponId && order.couponAmount > 0) {
-                    const coupon = await couponModel.findById(order.couponId);
-
-                    if (coupon) {
-                        if (order.subTotal < coupon.minPurchase) {
-                            refundAmount -= order.couponAmount;
-                            order.couponId = null;
-                            order.couponAmount = 0;
-                        } else {
-                            const itemSubTotal = item.quantity * item.salePrice;
-
-                            let discountValue = 0;
-                            if (typeof coupon.discount === "string" && coupon.discount.includes("%")) {
-                                discountValue = parseFloat(coupon.discount.replace("%", "")) / 100;
-                            } else {
-                                discountValue = Number(coupon.discount);
-                            }
-                            const couponShare = order.couponAmount / order.items.length
-
-                            refundAmount -= couponShare;
-                        }
-                    }
-                }
             }
 
             refundAmount = Math.round(refundAmount);
@@ -419,11 +417,7 @@ export const cancelOrderitemService = async (req, res) => {
 
         await order.save();
 
-        return res.status(SUCCESS).json({
-            success: true,
-            message: "Order item cancelled!",
-            order,
-        });
+        return res.status(SUCCESS).json({ success: true, message: "Order item cancelled!", order });
 
     } catch (error) {
         res.status(SERVER_ERROR).json({ success: false, message: error.message });
@@ -502,105 +496,105 @@ export const returnOrderItemService = async (req, res) => {
 
 
 export const downloadOrderInvoiceService = async (req, res) => {
-  const { orderId } = req.params;
+    const { orderId } = req.params;
 
-  try {
-    const order = await orderModel.findById(orderId).populate("userId");
-    if (!order) {
-      return res.status(NOT_FOUND).json({ success: false, message: "Order not found!" });
+    try {
+        const order = await orderModel.findById(orderId).populate("userId");
+        if (!order) {
+            return res.status(NOT_FOUND).json({ success: false, message: "Order not found!" });
+        }
+
+        // Split items by status
+        const deliveredItems = order.items.filter(i => i.status !== "cancelled" && i.status !== "returned");
+        const cancelledItems = order.items.filter(i => i.status === "cancelled");
+        const returnedItems = order.items.filter(i => i.status === "returned");
+
+        // Compute dynamic subtotals
+        const deliveredSubtotal = deliveredItems.reduce((sum, i) => sum + i.quantity * i.salePrice, 0);
+        const cancelledSubtotal = cancelledItems.reduce((sum, i) => sum + i.quantity * i.salePrice, 0);
+        const returnedSubtotal = returnedItems.reduce((sum, i) => sum + i.quantity * i.salePrice, 0);
+
+        const couponDiscount = order.couponAmount || 0;
+        const deliveryFee = order.deliveryFee || 0;
+
+        // Base subtotal (before tax)
+        const baseSubtotal = deliveredSubtotal + deliveryFee;
+
+        // Tax 18%
+        const taxAmount = Math.floor(Math.max(0, baseSubtotal) * TAX_PERCENT);
+
+        // Final payable total
+        let totalPayable = Math.max(0, baseSubtotal + taxAmount - order.couponAmount);
+        totalPayable = Math.round(totalPayable)
+
+        //GENERATE PDF 
+        const doc = new PDFDocument({ margin: 50 });
+        const filename = `Invoice_${order.orderId}.pdf`;
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+        doc.pipe(res);
+
+        // HEADER
+        doc.fontSize(20).text("Order Invoice", { align: "center" });
+        doc.moveDown(0.5);
+        doc.fontSize(12).text(`Order ID: ${order.orderId}`);
+        doc.text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`);
+        doc.text(`Customer: ${order.userId?.fullname || "N/A"}`);
+        doc.text(`Email: ${order.userId?.email || "N/A"}`);
+        doc.text(`Address: ${order?.address?.address || "N/A"}`);
+        doc.text(`${order?.address?.pincode || "N/A"}`);
+        doc.text(`${order?.address?.district || "N/A"}`);
+        doc.text(`${order?.address?.state || "N/A"}`);
+        doc.moveDown(1.5);
+
+        // ITEMS
+        doc.fontSize(14).text("Order Items", { underline: true });
+        doc.moveDown(0.5);
+
+        order.items.forEach((item, index) => {
+            const subTotal = item.quantity * item.salePrice;
+            doc
+                .fontSize(12)
+                .text(`${index + 1}. ${item.sku}`)
+                .text(`   Quantity: ${item.quantity}`)
+                .text(`   Price: Rs ${item.salePrice}`)
+                .text(`   Subtotal: Rs ${subTotal}`)
+                .text(`   Status: ${item.status.toUpperCase()}`)
+                .moveDown(0.5);
+        });
+
+        //  SUMMARY 
+        doc.moveDown(1);
+        doc.fontSize(14).text("Payment Summary", { underline: true });
+        doc.moveDown(0.5);
+
+        doc.fontSize(12).text(`Subtotal (Delivered Items): Rs ${deliveredSubtotal.toFixed(2)}`);
+        if (cancelledSubtotal > 0)
+            doc.text(`Cancelled Items Amount: - Rs ${cancelledSubtotal.toFixed(2)}`);
+        if (returnedSubtotal > 0)
+            doc.text(`Returned Items Amount: - Rs ${returnedSubtotal.toFixed(2)}`);
+        if (couponDiscount > 0)
+            doc.text(`Coupon Discount: - Rs ${couponDiscount.toFixed(2)}`);
+        doc.text(`Delivery Fee: Rs ${deliveryFee.toFixed(2)}`);
+        doc.text(`Tax (18%): Rs ${taxAmount.toFixed(2)}`);
+        doc.moveDown(0.5);
+
+        doc.font("Helvetica-Bold")
+            .fontSize(13)
+            .text(`Total Payable: Rs ${totalPayable.toFixed(2)}`, { align: "left" });
+        doc.font("Helvetica");
+
+        // FOOTER 
+        doc.moveDown(2);
+        doc.fontSize(10).text("Thank you for shopping with us!", { align: "center" });
+        doc.fontSize(9).text("This is a system-generated invoice.", { align: "center" });
+
+        doc.end();
+
+    } catch (error) {
+        res.status(SERVER_ERROR).json({ success: false, message: error.message });
     }
-
-    // Split items by status
-    const deliveredItems = order.items.filter(i => i.status !== "cancelled" && i.status !== "returned");
-    const cancelledItems = order.items.filter(i => i.status === "cancelled");
-    const returnedItems = order.items.filter(i => i.status === "returned");
-
-    // Compute dynamic subtotals
-    const deliveredSubtotal = deliveredItems.reduce((sum, i) => sum + i.quantity * i.salePrice, 0);
-    const cancelledSubtotal = cancelledItems.reduce((sum, i) => sum + i.quantity * i.salePrice, 0);
-    const returnedSubtotal = returnedItems.reduce((sum, i) => sum + i.quantity * i.salePrice, 0);
-
-    const couponDiscount = order.couponAmount || 0;
-    const deliveryFee = order.deliveryFee || 0;
-
-    // Base subtotal (before tax)
-    const baseSubtotal = deliveredSubtotal - couponDiscount + deliveryFee;
-
-    // Tax 18%
-    const taxAmount = Math.floor(Math.max(0, baseSubtotal) * TAX_PERCENT);
-
-    // Final payable total
-    let totalPayable = Math.max(0, baseSubtotal + taxAmount);
-    totalPayable = Math.round(totalPayable)    
-
-    //GENERATE PDF 
-    const doc = new PDFDocument({ margin: 50 });
-    const filename = `Invoice_${order.orderId}.pdf`;
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
-    doc.pipe(res);
-
-    // HEADER
-    doc.fontSize(20).text("Order Invoice", { align: "center" });
-    doc.moveDown(0.5);
-    doc.fontSize(12).text(`Order ID: ${order.orderId}`);
-    doc.text(`Order Date: ${new Date(order.createdAt).toLocaleDateString()}`);
-    doc.text(`Customer: ${order.userId?.fullname || "N/A"}`);
-    doc.text(`Email: ${order.userId?.email || "N/A"}`);
-    doc.text(`Address: ${order?.address?.address || "N/A"}`);
-    doc.text(`${order?.address?.pincode || "N/A"}`);
-    doc.text(`${order?.address?.district || "N/A"}`);
-    doc.text(`${order?.address?.state || "N/A"}`);
-    doc.moveDown(1.5);
-
-    // ITEMS
-    doc.fontSize(14).text("Order Items", { underline: true });
-    doc.moveDown(0.5);
-
-    order.items.forEach((item, index) => {
-      const subTotal = item.quantity * item.salePrice;
-      doc
-        .fontSize(12)
-        .text(`${index + 1}. ${item.sku}`)
-        .text(`   Quantity: ${item.quantity}`)
-        .text(`   Price: Rs ${item.salePrice}`)
-        .text(`   Subtotal: Rs ${subTotal}`)
-        .text(`   Status: ${item.status.toUpperCase()}`)
-        .moveDown(0.5);
-    });
-
-    //  SUMMARY 
-    doc.moveDown(1);
-    doc.fontSize(14).text("Payment Summary", { underline: true });
-    doc.moveDown(0.5);
-
-    doc.fontSize(12).text(`Subtotal (Delivered Items): Rs ${deliveredSubtotal.toFixed(2)}`);
-    if (cancelledSubtotal > 0)
-      doc.text(`Cancelled Items Amount: - Rs ${cancelledSubtotal.toFixed(2)}`);
-    if (returnedSubtotal > 0)
-      doc.text(`Returned Items Amount: - Rs ${returnedSubtotal.toFixed(2)}`);
-    if (couponDiscount > 0)
-      doc.text(`Coupon Discount: - Rs ${couponDiscount.toFixed(2)}`);
-    doc.text(`Delivery Fee: Rs ${deliveryFee.toFixed(2)}`);
-    doc.text(`Tax (18%): Rs ${taxAmount.toFixed(2)}`);
-    doc.moveDown(0.5);
-
-    doc.font("Helvetica-Bold")
-      .fontSize(13)
-      .text(`Total Payable: Rs ${totalPayable.toFixed(2)}`, { align: "left" });
-    doc.font("Helvetica");
-
-    // FOOTER 
-    doc.moveDown(2);
-    doc.fontSize(10).text("Thank you for shopping with us!", { align: "center" });
-    doc.fontSize(9).text("This is a system-generated invoice.", { align: "center" });
-
-    doc.end();
-
-  } catch (error) {
-    res.status(SERVER_ERROR).json({ success: false, message: error.message });
-  }
 };
 
 
@@ -639,7 +633,8 @@ export const verifyPaymentService = async (req, res) => {
             await cart.save();
         }
 
-        const order = new orderModel({ userId, orderId, address, items: products, subTotal, deliveryFee, taxAmount, totalAmount, 
+        const order = new orderModel({
+            userId, orderId, address, items: products, subTotal, deliveryFee, taxAmount, totalAmount,
             paymentMethod: "Razorpay",
             paymentStatus: "paid",
             transactions: [

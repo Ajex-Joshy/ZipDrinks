@@ -40,7 +40,7 @@ const ForgotPasswordOtp = ({setFpOtp , setNewPassword }) => {
                 toast.success(data.message)
             }
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error?.response?.data?.message)
         }
     }
 

@@ -54,7 +54,7 @@ const Navbar = () => {
                     }
                 } catch (error) {
                     console.log(error.message);
-                    toast.error('Error!', 'Something went wrong during logout.', error.message);
+                    toast.error('Error!', 'Something went wrong during logout.', error?.response?.data?.message);
                 }
                 finally{
                     setDropDown(false)
@@ -80,7 +80,7 @@ const Navbar = () => {
                                 <NavLink to="/" className={({ isActive })=> isActive?"text-white hover:text-blue-400 transition text-sm xl:text-base":"text-neutral-400 hover:text-white transition text-sm xl:text-base"}>Home</NavLink>
                                 <NavLink to="/shop" className={({ isActive })=> isActive?"text-white hover:text-blue-400 transition text-sm xl:text-base":"text-neutral-400 hover:text-white transition text-sm xl:text-base"}>Shop</NavLink>
                                 <NavLink to="/about" className={({ isActive })=> isActive?"text-white hover:text-blue-400 transition text-sm xl:text-base":"text-neutral-400 hover:text-white transition text-sm xl:text-base"}>About</NavLink>
-                                <NavLink to="contact" className={({ isActive })=> isActive?"text-white hover:text-blue-400 transition text-sm xl:text-base":"text-neutral-400 hover:text-white transition text-sm xl:text-base"}>Contact</NavLink>
+                                <NavLink to="/contact" className={({ isActive })=> isActive?"text-white hover:text-blue-400 transition text-sm xl:text-base":"text-neutral-400 hover:text-white transition text-sm xl:text-base"}>Contact</NavLink>
                             </nav>
                         </div>
 

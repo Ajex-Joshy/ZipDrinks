@@ -26,7 +26,7 @@ export default function AdminOrderDetail() {
         if (data.success) setOrder(data.order);
         else toast.error(data.message);
       } catch (error) {
-        toast.error(error.message);
+        toast.error(error?.response?.data?.message);
       } finally {
         setLoading(false);
       }
@@ -58,7 +58,7 @@ export default function AdminOrderDetail() {
             toast.error("Error!", data.message, "error");
           }
         } catch (error) {
-          toast.error("Error!", error.message, "error");
+          toast.error("Error!", error.response.data.message);
         }
       }
     });
@@ -99,7 +99,7 @@ export default function AdminOrderDetail() {
       }
 
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.response.data.message)
     }
     finally {
       setShowStatusModal(false)
