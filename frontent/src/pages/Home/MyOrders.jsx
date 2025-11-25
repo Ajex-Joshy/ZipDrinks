@@ -7,7 +7,7 @@ import axiosInstance from '../../Helper/AxiosInstance';
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from "sweetalert2"
-import Pagination from '../../Components/pagination';
+import Pagination from '../../Components/Pagination';
 
 const MyOrders = () => {
 
