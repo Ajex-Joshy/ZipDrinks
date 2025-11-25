@@ -12,6 +12,8 @@ const Banner = () => {
 
         const { data } = await axiosInstance.get('/api/banner')
 
+        console.log("Banner " , data)
+
         if(data.success){
           setBannerImages(data.banners.filter(b => b.isListed))
         }

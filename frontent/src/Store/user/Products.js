@@ -31,7 +31,7 @@ export const productFetch = createAsyncThunk('product/productFetch', async (para
                 totalPages: data.totalPages
             }
         } else {
-            return data.message
+            return rejectWithValue(data.message)
         }
 
     } catch (error) {
