@@ -33,7 +33,7 @@ const Profile = () => {
             }
         }
         getUserData()
-    },[user])
+    },[])
 
     return (
         <UserProfileMain>
