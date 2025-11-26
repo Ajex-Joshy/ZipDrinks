@@ -36,7 +36,10 @@ app.use(express.urlencoded({ extended : true}))
 app.use(cookieParser())
 app.use(cors({
     credentials : true,
-    origin : process.env.FRONTEND_URL 
+    origin : [
+        process.env.FRONTEND_URL,
+        process.env.FRONTEND_URL_MAIN
+    ] 
 }))
 
 app.use(passport.initialize());
