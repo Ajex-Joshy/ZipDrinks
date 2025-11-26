@@ -27,9 +27,8 @@ const Images = ({ images, productName }) => {
           <button
             key={index}
             onClick={() => setSelectedImage(index)}
-            className={`w-16 h-16 rounded border overflow-hidden ${
-              selectedImage === index ? "border-gray-400" : "border-gray-200"
-            }`}
+            className={`w-16 h-16 rounded border overflow-hidden ${selectedImage === index ? "border-gray-400" : "border-gray-200"
+              }`}
           >
             <img
               src={img}
@@ -45,12 +44,16 @@ const Images = ({ images, productName }) => {
 
         {/* Main Image */}
         <div
-          className="relative border border-gray-300 rounded overflow-hidden bg-white"
-          style={{ width: "400px", height: "400px" }}
+          className="relative border border-gray-300 rounded overflow-hidden bg-white
+          w-[280px] h-[280px]
+          sm:w-[320px] sm:h-[320px]
+          md:w-[350px] md:h-[350px]
+          lg:w-[400px] lg:h-[400px]"
           onMouseEnter={() => setZoom(true)}
           onMouseLeave={() => setZoom(false)}
           onMouseMove={handleMove}
         >
+
           <img
             ref={imgRef}
             src={images[selectedImage]}
@@ -79,9 +82,8 @@ const Images = ({ images, productName }) => {
                 backgroundImage: `url(${images[selectedImage]})`,
                 backgroundSize: `${400 * zoomLevel}px ${400 * zoomLevel}px`,
                 backgroundRepeat: "no-repeat",
-                backgroundPosition: `-${position.x * zoomLevel - 100}px -${
-                  position.y * zoomLevel - 100
-                }px`,
+                backgroundPosition: `-${position.x * zoomLevel - 100}px -${position.y * zoomLevel - 100
+                  }px`,
               }}
             ></div>
           </div>
