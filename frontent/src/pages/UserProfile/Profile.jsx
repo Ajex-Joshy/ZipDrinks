@@ -17,6 +17,8 @@ const Profile = () => {
         async function getUserData(){
             try {
 
+                if(user) return user
+
                 const { data } = await axiosInstance.get('/api/user/data')
 
                 if(data.success){
