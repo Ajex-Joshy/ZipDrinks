@@ -54,7 +54,7 @@ const AddressForm = ({ addressSubmit, address, checkout }) => {
                             {...register("fullname", {
                                 required: { value: true, message: "Full name is required !" },
                                 validate: (val) => val.trim() != "" || "Enter valid name !",
-                                maxLength: { value: 20, message: "Name must be lessthan 20" },
+                                maxLength: { value: 25, message: "Name must be lessthan 25" },
                                 pattern: {
                                     value: /^(?=.*[A-Za-z]).+$/,
                                     message: "Fullname must include at least one alphabet !"

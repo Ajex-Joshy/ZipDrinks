@@ -123,7 +123,8 @@ const ProfileEdit = () => {
                             {...register('fullname', {
                                 required: { value: true, message: "Full name is requried !" },
                                 minLength: { value: 4, message: "Minimum 4 letters !" },
-                                validate: (value) => value.trim() !== "" || "Name cannot be whitespace !"
+                                validate: (value) => value.trim() !== "" || "Name cannot be whitespace !",
+                                maxLength : { value : 15 , message : "Name must be lessthan 25 !"}
                             })}
                             className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-black"
                             placeholder="Enter your full name"

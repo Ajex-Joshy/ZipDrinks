@@ -66,7 +66,9 @@ const Signup = () => {
                                 <input className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent"
                                     type="text" placeholder="Bonnie Green" {...register('fullname', {
                                         required: { value: true, message: "Full name is requried !" },
-                                        minLength: { value: 4, message: "Minimum 4 letters !" }, validate: (value) => value.trim() !== "" || "Name cannot be whitespace !"
+                                        minLength: { value: 4, message: "Minimum 4 letters !" }, 
+                                        validate: (value) => value.trim() !== "" || "Name cannot be whitespace !",
+                                        maxLength : { value : 25 , message : "Name must be lessthan 25 letters !"}
                                     })} />
                                 {errors.fullname && <p className='text-red-500 text-sm mt-1'>{errors.fullname.message}</p>}
                             </div>
@@ -92,7 +94,8 @@ const Signup = () => {
                                     <input className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent"
                                         type="tel" placeholder="123-456-7890" {...register("phone", {
                                             required: { value: true, message: "Phone Number is required !" },
-                                            pattern: { value: /^[6-9]\d{9}$/, message: "Enter a valid number !" }, minLength: { value: 10, message: "Phone Number must be 10" }
+                                            pattern: { value: /^[6-9]\d{9}$/, message: "Enter a valid number !" }, 
+                                            minLength: { value: 10, message: "Phone Number must be 10" }
                                         })} />
                                     {errors.phone && <p className='text-red-500 text-sm mt-1'>{errors.phone.message}</p>}
                                 </div>

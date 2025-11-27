@@ -76,7 +76,8 @@ const Login = () => {
                                 </label>
                                 <div className="relative">
                                     <input className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent" type="password"
-                                        placeholder="••••••••" {...register("password", { required: { value: true, message: "Password is required !" }, minLength: { value: 8, message: "Password must be 8 letters !" } })} />
+                                        placeholder="••••••••" {...register("password", { required: { value: true, message: "Password is required !" }, 
+                                        minLength: { value: 8, message: "Password must be 8 letters !" } })} />
                                 </div>
                                 {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
                             </div>
