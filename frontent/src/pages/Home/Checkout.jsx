@@ -175,6 +175,7 @@ const Checkout = () => {
           description: "Order Payment",
           order_id: razorpayOrder.id,
           handler: async function (response) {
+            setLoading(true)
             try {
               const verifyData = {
                 razorpay_order_id: response.razorpay_order_id,
@@ -202,6 +203,9 @@ const Checkout = () => {
               }
             } catch (err) {
               toast.error(err.response.data.message || "Payment verification failed");
+            }
+            finally{
+              setLoading(false)
             }
           },
           prefill: {
