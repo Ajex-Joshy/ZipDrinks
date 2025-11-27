@@ -43,7 +43,7 @@ const OrderDetail = () => {
                 if (!value.trim()) {
                     return 'Reason is required!';
                 }
-                if(value.length > 25){
+                if (value.length > 25) {
                     return 'Reason must be lessthan 25 letters !'
                 }
             },
@@ -257,7 +257,11 @@ const OrderDetail = () => {
                                                         <span className="w-auto px-4 py-2 bg-gray-300 text-gray-600 text-sm font-medium rounded cursor-not-allowed">
                                                             Returned
                                                         </span>
-                                                    ) : null}
+                                                    ) : product.status == "return-rejected" ? (
+                                                        <span className="w-auto px-4 py-2 bg-gray-300 text-gray-600 text-sm font-medium rounded cursor-not-allowed">
+                                                            Return rejected
+                                                        </span>
+                                                    ) : ""}
 
                                                     {product.status === "processing" || product.status === "pending" ? (
                                                         <button

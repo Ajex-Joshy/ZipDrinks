@@ -165,6 +165,11 @@ export const approveOrderReturnService = async (req, res) => {
 
     if (status == "return-rejected") {
       order.orderStatus = status || "return-rejected"
+      order.items.forEach(item => {
+        if (item.status === "return-requested") {
+          item.status = status || "return-rejected";
+        }
+      })
     }
     else {
 
@@ -243,7 +248,10 @@ export const approveOrderItemReturnService = async (req, res) => {
 
     if (status == "return-rejected") {
       item.status = status || "return-rejected"
-      
+      if (order.items.every(i => i.status === "return-rejected")) {
+        order.orderStatus = "returned-rejected";
+      }
+
     }
     else {
 
