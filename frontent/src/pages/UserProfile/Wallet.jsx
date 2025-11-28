@@ -13,6 +13,7 @@ export default function Wallet() {
     const [query, setQuery] = useSearchParams()
 
     const [currentPage, setCurrentPage] = useState(Number(query.get("page")) || 1)
+    const [filter , setFilter] = useState(query.get("filter") || "")
     const [totalPages, setTotalPages] = useState(1)
     const itemsPerPage = 5
 
@@ -20,9 +21,10 @@ export default function Wallet() {
 
     useEffect(() => {
         setQuery({
-            page: currentPage
+            page: currentPage,
+            filter : filter
         })
-    }, [currentPage, setQuery])
+    }, [currentPage, setQuery , filter])
 
     useEffect(() => {
         async function getWallet() {
@@ -30,6 +32,7 @@ export default function Wallet() {
 
                 const params = {
                     page: currentPage,
+                    filter : filter,
                     limit: itemsPerPage
                 }
 
@@ -49,7 +52,7 @@ export default function Wallet() {
             }
         }
         getWallet()
-    }, [currentPage])
+    }, [currentPage , filter])
 
     return (
         <UserProfileMain>
@@ -83,6 +86,14 @@ export default function Wallet() {
                                 Available wallet balance : <span className="font-semibold">₹ {wallet[0]?.balance?.toFixed(2) || 0}</span>
                             </p>
                         </div>
+
+                        <div>
+                            <select value={filter} onChange={(e)=> setFilter(e.target.value)}>
+                                <option value="credit">Credited</option>
+                                <option value="debit">Debited</option>
+                            </select>
+                        </div>
+
 
                         {/* Transaction Table */}
                         <div className="overflow-x-auto mb-8">

@@ -1,7 +1,7 @@
 import walletModel from "../../models/wallet.js"
 import mongoose from "mongoose"
 
-export const getUserWalletService = async (userId, page = 1, limit = 5) => {
+export const getUserWalletService = async (userId, page = 1, limit = 5 , filter) => {
 
     page = parseInt(page)
     limit = parseInt(limit)
@@ -13,9 +13,19 @@ export const getUserWalletService = async (userId, page = 1, limit = 5) => {
         walletExists = await walletModel.create({ userId, balance: 0, payments: [] });
     }
 
+    let query = {}
+
+    if(filter == "credit"){
+        query.type = "credit"
+    }
+    else{
+        query.type = "debit"
+    }
+
     let wallet = await walletModel.aggregate([
         { $match: { userId: new mongoose.Types.ObjectId(userId) } },
         { $unwind: "$payments" },
+        { $match : query},
         { $sort: { "payments.time": -1 } },
         { $skip: skip },
         { $limit: limit }

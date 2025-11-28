@@ -8,13 +8,13 @@ import { NOT_FOUND, SERVER_ERROR, SUCCESS } from "../../utils/constants.js"
 
 export const getUserWallet = async (req, res) => {
     const { userId } = req
-    let { page, limit } = req.query
+    let { page, limit , filter } = req.query
 
     try {
         page = parseInt(page)
         limit = parseInt(limit)
 
-        let wallet = await getUserWalletService(userId, page, limit)
+        let wallet = await getUserWalletService(userId, page, limit , filter)
 
         if (!wallet) {
             return res.status(NOT_FOUND).json({ success: false, message: "Wallet Not found !" })
