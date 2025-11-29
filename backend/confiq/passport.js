@@ -8,7 +8,7 @@ import { SIX_DIGIT_MIN_VALUE, SIX_DIGIT_RANGE_VALUE } from "../utils/constants.j
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/api/auth/google/callback'
+    callbackURL: 'https://www.api.zipdrinks.shop/api/auth/google/callback'
 },
 
     async (accessToken, refreshToken, profile, done) => {
